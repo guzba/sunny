@@ -505,7 +505,8 @@ proc fromJson(v: var Something, value: JsonValue, input: string) =
 
   v.c = "cat"
 
-  defaultFromJson(v, value, input)
+  # defaultFromJson(v, value, input)
+  sunny.fromJson(v, value, input)
 
   echo "from stage2 ", v
 

@@ -464,26 +464,7 @@ proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string)
 proc fromJson*[T: ref](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string)
 
-proc defaultFromJson*(v: var bool, value: JsonValue, input: string)
-proc defaultFromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string)
-proc defaultFromJson*(v: var SomeSignedInt, value: JsonValue, input: string)
-proc defaultFromJson*(v: var SomeFloat, value: JsonValue, input: string)
-proc defaultFromJson*(v: var char, value: JsonValue, input: string)
-proc defaultFromJson*(v: var string, value: JsonValue, input: string)
-proc defaultFromJson*(v: var RawJson, value: JsonValue, input: string)
-proc defaultFromJson*(v: var std.JsonNode, value: JsonValue, input: string)
-proc defaultFromJson*[T: array](v: var T, value: JsonValue, input: string)
-proc defaultFromJson*[T: enum](v: var T, value: JsonValue, input: string)
-proc defaultFromJson*[T: tuple](v: var T, value: JsonValue, input: string)
-proc defaultFromJson*[T: distinct](v: var T, value: JsonValue, input: string)
-proc defaultFromJson*[T](v: var Option[T], value: JsonValue, input: string)
-proc defaultFromJson*[T](v: var seq[T], value: JsonValue, input: string)
-proc defaultFromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string)
-proc defaultFromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string)
-proc defaultFromJson*[T: ref](v: var T, value: JsonValue, input: string)
-proc defaultFromJson*[T: object](obj: var T, value: JsonValue, input: string)
-
-proc defaultFromJson*(v: var bool, value: JsonValue, input: string) =
+proc fromJson*(v: var bool, value: JsonValue, input: string) =
   if value.kind == BooleanValue:
     v = value.b
   elif value.kind == NullValue:
@@ -494,7 +475,7 @@ proc defaultFromJson*(v: var bool, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string) =
+proc fromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string) =
   if value.kind == NumberValue:
     # The first character is validated as {'-', '0' .. '9'}
 
@@ -522,7 +503,7 @@ proc defaultFromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var SomeSignedInt, value: JsonValue, input: string) =
+proc fromJson*(v: var SomeSignedInt, value: JsonValue, input: string) =
   if value.kind == NumberValue:
     # The first character is validated as {'-', '0' .. '9'}
 
@@ -557,7 +538,7 @@ proc defaultFromJson*(v: var SomeSignedInt, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var SomeFloat, value: JsonValue, input: string) =
+proc fromJson*(v: var SomeFloat, value: JsonValue, input: string) =
   if value.kind == NumberValue:
     let chars = parseFloat(input, v, value.start)
     if chars != value.len:
@@ -570,7 +551,7 @@ proc defaultFromJson*(v: var SomeFloat, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var char, value: JsonValue, input: string) =
+proc fromJson*(v: var char, value: JsonValue, input: string) =
   if value.kind == StringValue:
     if value.len == 3: # "c"
       v = input[value.start + 1]
@@ -584,7 +565,7 @@ proc defaultFromJson*(v: var char, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var string, value: JsonValue, input: string) =
+proc fromJson*(v: var string, value: JsonValue, input: string) =
   if value.kind == StringValue:
     v = value.unescapeString(input)
   elif value.kind == NullValue:
@@ -595,12 +576,12 @@ proc defaultFromJson*(v: var string, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*(v: var RawJson, value: JsonValue, input: string) =
+proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
   if value.len > 0:
     v.string.setLen(value.len)
     copyMem(v.string[0].addr, input[value.start].unsafeAddr, value.len)
 
-proc defaultFromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
+proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
 
   proc fromJsonInternal(
     v: var std.JsonNode,
@@ -650,7 +631,7 @@ proc defaultFromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
 
   fromJsonInternal(v, value, input, 0)
 
-proc defaultFromJson*[T: array](v: var T, value: JsonValue, input: string) =
+proc fromJson*[T: array](v: var T, value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     if v.len == value.a.len:
       for i in 0 ..< value.a.len:
@@ -668,7 +649,7 @@ proc defaultFromJson*[T: array](v: var T, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*[T: enum](v: var T, value: JsonValue, input: string) =
+proc fromJson*[T: enum](v: var T, value: JsonValue, input: string) =
   if value.kind == NumberValue:
     var tmp: int
     fromJson(tmp, value, input)
@@ -698,7 +679,7 @@ proc defaultFromJson*[T: enum](v: var T, value: JsonValue, input: string) =
       ", got " & $value.kind & " at " & $value.start
     )
 
-proc defaultFromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
+proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
   if value.kind == NullValue:
     return
 
@@ -729,12 +710,12 @@ proc defaultFromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
+proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
   var tmp: T.distinctBase
   fromJson(tmp, value, input)
   v = cast[T](tmp)
 
-proc defaultFromJson*[T](v: var Option[T], value: JsonValue, input: string) =
+proc fromJson*[T](v: var Option[T], value: JsonValue, input: string) =
   if value.kind == NullValue:
     v = none(T)
   else:
@@ -742,7 +723,7 @@ proc defaultFromJson*[T](v: var Option[T], value: JsonValue, input: string) =
     fromJson(tmp, value, input)
     v = some(move tmp)
 
-proc defaultFromJson*[T](v: var seq[T], value: JsonValue, input: string) =
+proc fromJson*[T](v: var seq[T], value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     for i in 0 ..< value.a.len:
       let entry {.cursor.} = value.a[i]
@@ -757,7 +738,7 @@ proc defaultFromJson*[T](v: var seq[T], value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc defaultFromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string) =
+proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     for i in 0 ..< value.a.len:
       let entry {.cursor.} = value.a[i]
@@ -772,7 +753,7 @@ proc defaultFromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: 
       " at " & $value.start
     )
 
-proc defaultFromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string) =
+proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when v is ref:
       new(v)
@@ -788,7 +769,7 @@ proc defaultFromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: s
       " at " & $value.start
     )
 
-proc defaultFromJson*[T: ref](v: var T, value: JsonValue, input: string) =
+proc fromJson*[T: ref](v: var T, value: JsonValue, input: string) =
   if value.kind == NullValue:
     discard
   else:
@@ -833,7 +814,7 @@ macro newObjectVariant(obj: typed, value: typed): untyped =
 
 template json*(v: string) {.pragma.}
 
-proc defaultFromJson*[T: object](obj: var T, value: JsonValue, input: string) =
+proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when obj.isObjectVariant:
       # Do the object variant discriminator field first
@@ -914,64 +895,6 @@ proc defaultFromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       "Expected " & $ObjectValue & ", got " & $value.kind &
       " at " & $value.start
     )
-
-proc defaultFromJson*[T](x: typedesc[T], input: string): T =
-  let root = parseJson(input)
-  result.defaultFromJson(root, input)
-
-proc fromJson*(v: var bool, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var SomeSignedInt, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var SomeFloat, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var char, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var string, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: array](v: var T, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: enum](v: var T, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T](v: var Option[T], value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T](v: var seq[T], value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: ref](v: var T, value: JsonValue, input: string) =
-  defaultFromJson(v, value, input)
-
-proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
-  defaultFromJson(obj, value, input)
 
 proc fromJson*[T](x: typedesc[T], input: string): T =
   let root = parseJson(input)
@@ -1069,49 +992,30 @@ proc toJson*(src: char, s: var string)
 proc toJson*(src: string, s: var string)
 proc toJson*(src: RawJson, s: var string)
 proc toJson*(src: std.JsonNode, s: var string)
-proc toJson[T: array](src: T, s: var string)
-proc toJson[T: enum](src: T, s: var string)
-proc toJson[T: tuple](src: T, s: var string)
-proc toJson[T: distinct](src: T, s: var string)
-proc toJson[T](src: Option[T], s: var string)
-proc toJson[T](src: seq[T], s: var string)
-proc toJson[T](src: (SomeSet[T] | set[T]), s: var string)
-proc toJson[T](src: SomeTable[string, T], s: var string)
-proc toJson[T: ref](src: T, s: var string)
-proc toJson[T: object](src: T, s: var string)
+proc toJson*[T: array](src: T, s: var string)
+proc toJson*[T: enum](src: T, s: var string)
+proc toJson*[T: tuple](src: T, s: var string)
+proc toJson*[T: distinct](src: T, s: var string)
+proc toJson*[T](src: Option[T], s: var string)
+proc toJson*[T](src: seq[T], s: var string)
+proc toJson*[T](src: (SomeSet[T] | set[T]), s: var string)
+proc toJson*[T](src: SomeTable[string, T], s: var string)
+proc toJson*[T: ref](src: T, s: var string)
+proc toJson*[T: object](src: T, s: var string)
 
-proc defaultToJson*(src: bool, s: var string)
-proc defaultToJson*(src: SomeUnsignedInt, s: var string)
-proc defaultToJson*(src: SomeSignedInt, s: var string)
-proc defaultToJson*(src: SomeFloat, s: var string)
-proc defaultToJson*(src: char, s: var string)
-proc defaultToJson*(src: string, s: var string)
-proc defaultToJson*(src: RawJson, s: var string)
-proc defaultToJson*(src: std.JsonNode, s: var string)
-proc defaultToJson*[T: array](src: T, s: var string)
-proc defaultToJson*[T: enum](src: T, s: var string)
-proc defaultToJson*[T: tuple](src: T, s: var string)
-proc defaultToJson*[T: distinct](src: T, s: var string)
-proc defaultToJson*[T](src: Option[T], s: var string)
-proc defaultToJson*[T](src: seq[T], s: var string)
-proc defaultToJson*[T](src: (SomeSet[T] | set[T]), s: var string)
-proc defaultToJson*[T](src: SomeTable[string, T], s: var string)
-proc defaultToJson*[T: ref](src: T, s: var string)
-proc defaultToJson*[T: object](src: T, s: var string)
-
-proc defaultToJson*(src: bool, s: var string) =
+proc toJson*(src: bool, s: var string) =
   if src:
     s.add "true"
   else:
     s.add "false"
 
-proc defaultToJson*(src: SomeUnsignedInt, s: var string) =
+proc toJson*(src: SomeUnsignedInt, s: var string) =
   s.add $src
 
-proc defaultToJson*(src: SomeSignedInt, s: var string) =
+proc toJson*(src: SomeSignedInt, s: var string) =
   s.add $src
 
-proc defaultToJson*(src: SomeFloat, s: var string) =
+proc toJson*(src: SomeFloat, s: var string) =
   let cls = classify(src)
   case cls:
   of fcNan, fcInf, fcNegInf:
@@ -1121,7 +1025,7 @@ proc defaultToJson*(src: SomeFloat, s: var string) =
   else: # fcNormal, fcSubnormal
     s.addFloat src # Same as std/json
 
-proc defaultToJson*(src: char, s: var string) =
+proc toJson*(src: char, s: var string) =
   if src < 32.char or src == 127.char:
     error("Cannot JSON encode a control character in one byte")
   elif src >= 128.char:
@@ -1131,7 +1035,7 @@ proc defaultToJson*(src: char, s: var string) =
     s.add src
     s.add '"'
 
-proc defaultToJson*(src: string, s: var string) =
+proc toJson*(src: string, s: var string) =
   s.add '"'
 
   var i, copyStart: int
@@ -1167,13 +1071,13 @@ proc defaultToJson*(src: string, s: var string) =
 
   s.add '"'
 
-proc defaultToJson*(src: RawJson, s: var string) =
+proc toJson*(src: RawJson, s: var string) =
   if src.string.len > 0:
     let tmp = s.len
     s.setLen(tmp + src.string.len)
     copyMem(s[tmp].addr, src.string[0].unsafeAddr, src.string.len)
 
-proc defaultToJson*(src: std.JsonNode, s: var string) =
+proc toJson*(src: std.JsonNode, s: var string) =
   if src == nil:
     s.add "null"
   else:
@@ -1209,7 +1113,7 @@ proc defaultToJson*(src: std.JsonNode, s: var string) =
         inc i
       s.add '}'
 
-proc defaultToJson*[T: array](src: T, s: var string) =
+proc toJson*[T: array](src: T, s: var string) =
   s.add '['
   for i, e in src:
     if i > 0:
@@ -1217,10 +1121,10 @@ proc defaultToJson*[T: array](src: T, s: var string) =
     e.toJson(s)
   s.add']'
 
-proc defaultToJson*[T: enum](src: T, s: var string) =
+proc toJson*[T: enum](src: T, s: var string) =
   ($src).toJson(s)
 
-proc defaultToJson*[T: tuple](src: T, s: var string) =
+proc toJson*[T: tuple](src: T, s: var string) =
   when T.isNamedTuple():
     s.add '{'
     var i: int
@@ -1240,16 +1144,16 @@ proc defaultToJson*[T: tuple](src: T, s: var string) =
       e.toJson(s)
     s.add ']'
 
-proc defaultToJson*[T: distinct](src: T, s: var string) =
+proc toJson*[T: distinct](src: T, s: var string) =
   cast[T.distinctBase](src).toJson(s)
 
-proc defaultToJson*[T](src: Option[T], s: var string) =
+proc toJson*[T](src: Option[T], s: var string) =
   if src.isSome:
     src.unsafeGet.toJson(s)
   else:
     s.add "null"
 
-proc defaultToJson*[T](src: seq[T], s: var string) =
+proc toJson*[T](src: seq[T], s: var string) =
   s.add '['
   for i, e in src:
     if i > 0:
@@ -1257,7 +1161,7 @@ proc defaultToJson*[T](src: seq[T], s: var string) =
     e.toJson(s)
   s.add ']'
 
-proc defaultToJson*[T](src: (SomeSet[T] | set[T]), s: var string) =
+proc toJson*[T](src: (SomeSet[T] | set[T]), s: var string) =
   s.add '['
   for i, e in src:
     if i > 0:
@@ -1265,7 +1169,7 @@ proc defaultToJson*[T](src: (SomeSet[T] | set[T]), s: var string) =
     e.toJson(s)
   s.add']'
 
-proc defaultToJson*[T](src: SomeTable[string, T], s: var string) =
+proc toJson*[T](src: SomeTable[string, T], s: var string) =
   s.add '{'
   var i: int
   for k, v in src.pairs:
@@ -1277,13 +1181,13 @@ proc defaultToJson*[T](src: SomeTable[string, T], s: var string) =
     inc i
   s.add '}'
 
-proc defaultToJson*[T: ref](src: T, s: var string) =
+proc toJson*[T: ref](src: T, s: var string) =
   if src == nil:
     s.add "null"
   else:
     src[].toJson(s)
 
-proc defaultToJson*[T: object](src: T, s: var string) =
+proc toJson*[T: object](src: T, s: var string) =
   s.add '{'
 
   var i: int
@@ -1324,63 +1228,6 @@ proc defaultToJson*[T: object](src: T, s: var string) =
       inc i
 
   s.add '}'
-
-proc defaultToJson*[T](src: T): string =
-  src.defaultToJson(result)
-
-proc toJson*(src: bool, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: SomeUnsignedInt, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: SomeSignedInt, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: SomeFloat, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: char, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: string, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: RawJson, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson*(src: std.JsonNode, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: array](src: T, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: enum](src: T, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: tuple](src: T, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: distinct](src: T, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T](src: Option[T], s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T](src: seq[T], s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T](src: (SomeSet[T] | set[T]), s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T](src: SomeTable[string, T], s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: ref](src: T, s: var string) =
-  src.defaultToJson(s)
-
-proc toJson[T: object](src: T, s: var string) =
-  src.defaultToJson(s)
 
 proc toJson*[T](src: T): string =
   src.toJson(result)
