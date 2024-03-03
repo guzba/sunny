@@ -490,15 +490,36 @@ block:
 
   doAssert Box2.fromJson("""{"type":1,"f":3.14}""").f == 3.14
 
+block:
+  type Holder = object
+    a {.json: ",string".}: bool
+    b {.json: ",string".}: uint
+    c {.json: ",string".}: int
+    d {.json: ",string".}: float
+
+  const encoded = """{"a":"true","b":"3","c":"-1","d":"2.0"}"""
+
+  doAssert Holder(a: true, b: 3, c: -1, d: 2.0).toJson() == encoded
+
+  doAssert Holder.fromJson(encoded) == Holder(a: true, b: 3, c: -1, d: 2.0)
+
+
+
+
+
+
+
+
+
+
+
+
+
 # block:
 type Something = object
   a: int
   b: bool
   c: string
-
-
-
-
 
 proc fromJson(v: var Something, value: JsonValue, input: string) =
   echo "from stage1 ", v
@@ -511,14 +532,6 @@ proc fromJson(v: var Something, value: JsonValue, input: string) =
   echo "from stage2 ", v
 
   v.a = 8
-
-
-
-
-
-
-
-
 
 let something = Something.fromJson("""{"a":9,"b":true,"c":null}""")
 echo something

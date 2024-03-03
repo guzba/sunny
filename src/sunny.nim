@@ -861,6 +861,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
         else:
           const
             required = "required" in parts[1 .. ^1]
+            asString = "string" in parts[1 .. ^1]
             renamedField = if parts[0] != "": parts[0] else: k
           when required:
             var found: bool
@@ -869,7 +870,21 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
             if key == renamedField: # TODO: snake case?
               when required:
                 found = true
-              fromJson(v, value.o[i][1], input)
+              when asString:
+                var tmp: JsonValue
+                when v is bool:
+                  tmp = JsonValue(kind: BooleanValue)
+                  var ii = value.o[i][1].start + 1
+                  tmp.b = parseBoolean(input, ii)
+                elif v is SomeNumber:
+                  tmp = JsonValue(kind: NumberValue)
+                else:
+                  {.error: "Using the string JSON option only applies to bool, integer and floating-point fields".}
+                tmp.start = value.o[i][1].start + 1
+                tmp.len = value.o[i][1].len - 2
+                fromJson(v, tmp, input)
+              else:
+                fromJson(v, value.o[i][1], input)
               break
           when required:
             if not found:
@@ -1209,7 +1224,16 @@ proc toJson*[T: object](src: T, s: var string) =
             s.add ','
           const tmp = renamedKey.toJson() & ':'
           s.add tmp
-          v.toJson(s)
+          const asString = "string" in parts[1 .. ^1]
+          when asString:
+            when v is (bool | SomeNumber):
+              s.add '"'
+              v.toJson(s)
+              s.add '"'
+            else:
+              {.error: "Using the string JSON option only applies to bool, integer and floating-point fields".}
+          else:
+            v.toJson(s)
           inc i
 
         const omitempty = "omitempty" in parts[1 .. ^1]
