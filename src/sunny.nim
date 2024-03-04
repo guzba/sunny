@@ -357,6 +357,8 @@ proc parseJson(input: string): JsonValue =
             error("Expected , at " & $i)
           inc i
           skipWhitespace(input, i)
+          if i == input.len:
+            break
 
         if input[i] == '"':
           let
@@ -370,6 +372,8 @@ proc parseJson(input: string): JsonValue =
             error("Expected : at " & $i)
           inc i
           skipWhitespace(input, i)
+          if i == input.len:
+            break
         else:
           error("Unexpected " & input[i] & " at " & $i)
 
@@ -395,6 +399,8 @@ proc parseJson(input: string): JsonValue =
             error("Expected , at " & $i)
           inc i
           skipWhitespace(input, i)
+          if i == input.len:
+            break
 
       else:
         error("Unexpected JsonValue kind, should not happen")
