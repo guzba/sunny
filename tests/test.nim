@@ -1,5 +1,4 @@
-import unicody, sunny {.all.}, data/twitter, std/strutils, std/options,
-    std/sets, std/tables
+import unicody, sunny {.all.}, std/strutils, std/options, std/sets, std/tables
 
 from std/json as std import nil
 
@@ -302,17 +301,21 @@ block:
   let r2 = (ref seq[float]).fromJson("[4,5,6]")
   doAssert r2[] == @[4d,5,6]
 
-block:
-  type Twitter = object
-    statuses: RawJson
-  doAssert Twitter.fromJson(twitterJson).statuses.string == twitterJson[16 ..< ^391]
+when not defined(js):
+  import data/twitter
+
+  block:
+    type Twitter = object
+      statuses: RawJson
+    doAssert Twitter.fromJson(twitterJson).statuses.string == twitterJson[16 ..< ^391]
+
+  block:
+    let
+      a = std.parseJson(twitterJson)
+      b = std.JsonNode.fromJson(twitterJson)
+    doAssert std.`==`(a, b)
 
 block:
-  let
-    a = std.parseJson(twitterJson)
-    b = std.JsonNode.fromJson(twitterJson)
-  doAssert std.`==`(a, b)
-
   doAssertRaises CatchableError:
     discard std.JsonNode.fromJson("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
 

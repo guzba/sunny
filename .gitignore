@@ -12,3 +12,4 @@ nimcache
 .*
 dump.txt
 *.dSYM/
+*.js

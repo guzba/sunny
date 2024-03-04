@@ -66,10 +66,14 @@ proc copy(s: var string, src: string, start, len: int) {.inline.} =
     for i in start ..< start + len:
       s.add src[i]
   else:
-    if len > 0:
-      let tmp = s.len
-      s.setLen(tmp + len)
-      copyMem(s[tmp].addr, src[start].unsafeAddr, len)
+    when defined(js):
+      for i in start ..< start + len:
+        s.add src[i]
+    else:
+      if len > 0:
+        let tmp = s.len
+        s.setLen(tmp + len)
+        copyMem(s[tmp].addr, src[start].unsafeAddr, len)
 
 proc unescapeString(input: string, start, len: int): string =
   if len == 0:
@@ -246,22 +250,47 @@ proc parseNumber(input: string, i: var int): int =
   return len
 
 proc parseBoolean(input: string, i: var int): bool {.inline.} =
-  {.gcsafe.}:
-    if i + 3 < input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
+  when defined(js):
+    if i + 4 <= input.len and
+      input[i + 0] == t[0] and
+      input[i + 1] == t[1] and
+      input[i + 2] == t[2] and
+      input[i + 3] == t[3]:
       i += 4
       return true
-    elif i + 4 < input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
+    elif i + 5 <= input.len and
+      input[i + 0] == f[0] and
+      input[i + 1] == f[1] and
+      input[i + 2] == f[2] and
+      input[i + 3] == f[3] and
+      input[i + 4] == f[4]:
       i += 5
       return false
-    else:
-      error("Expected true or false at " & $i)
+  else:
+    {.gcsafe.}:
+      if i + 4 <= input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
+        i += 4
+        return true
+      elif i + 5 <= input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
+        i += 5
+        return false
+  error("Expected true or false at " & $i)
 
 proc parseNull(input: string, i: var int) {.inline.} =
-  {.gcsafe.}:
-    if i + 3 < input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
+  when defined(js):
+    if i + 4 <= input.len and
+      input[i + 0] == n[0] and
+      input[i + 1] == n[1] and
+      input[i + 2] == n[2] and
+      input[i + 3] == n[3]:
       i += 4
-    else:
-      error("Expected null at " & $i)
+      return
+  else:
+    {.gcsafe.}:
+      if i + 4 <= input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
+        i += 4
+        return
+  error("Expected null at " & $i)
 
 when defined(release) and defined(nimHasQuirky):
   proc skipWhitespace(input: string, i: var int) {.inline, quirky.}
@@ -451,7 +480,10 @@ proc parseJson(input: string): JsonValue =
   if stack.len > 0 or not root.isSome:
     error("Unexpected end of JSON input")
 
-  return move root.get
+  when defined(js):
+    return root.get
+  else:
+    return move root.get
 
 proc fromJson*(v: var bool, value: JsonValue, input: string)
 proc fromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string)
@@ -733,9 +765,8 @@ proc fromJson*[T](v: var Option[T], value: JsonValue, input: string) =
 proc fromJson*[T](v: var seq[T], value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     for i in 0 ..< value.a.len:
-      let entry {.cursor.} = value.a[i]
       var tmp: T
-      fromJson(tmp, entry, input)
+      fromJson(tmp, value.a[i], input)
       v.add(move tmp)
   elif value.kind == NullValue:
     discard
@@ -748,9 +779,8 @@ proc fromJson*[T](v: var seq[T], value: JsonValue, input: string) =
 proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     for i in 0 ..< value.a.len:
-      let entry {.cursor.} = value.a[i]
       var tmp: T
-      fromJson(tmp, entry, input)
+      fromJson(tmp, value.a[i], input)
       v.incl(move tmp)
   elif value.kind == NullValue:
     discard
@@ -837,8 +867,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
             else:
               const renamedField = if parts[0] != "": parts[0] else: k
               for i in 0 ..< value.o.len:
-                let key {.cursor.} = value.o[i][0]
-                if key == renamedField:
+                if value.o[i][0] == renamedField:
                   var tmp: type(obj.discriminatorField)
                   fromJson(tmp, value.o[i][1], input)
                   foundDiscriminator = true
@@ -848,8 +877,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
                 error("Missing required discriminator: " & renamedField)
           else:
             for i in 0 ..< value.o.len:
-              let key {.cursor.} = value.o[i][0]
-              if key == k:
+              if value.o[i][0] == k:
                 var tmp: type(obj.discriminatorField)
                 fromJson(tmp, value.o[i][1], input)
                 foundDiscriminator = true
@@ -873,8 +901,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
           when required:
             var found: bool
           for i in 0 ..< value.o.len:
-            let key {.cursor.} = value.o[i][0]
-            if key == renamedField:
+            if value.o[i][0] == renamedField:
               when required:
                 found = true
               when asString:
@@ -898,8 +925,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
               error("Missing required field: " & renamedField)
       else:
         for i in 0 ..< value.o.len:
-          let key {.cursor.} = value.o[i][0]
-          if key == k:
+          if value.o[i][0] == k:
             fromJson(v, value.o[i][1], input)
             break
 
@@ -919,9 +945,13 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
     )
 
 proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
-  if value.len > 0:
-    v.string.setLen(value.len)
-    copyMem(v.string[0].addr, input[value.start].unsafeAddr, value.len)
+  when defined(js):
+    for c in input:
+      v.string.add c
+  else:
+    if value.len > 0:
+      v.string.setLen(value.len)
+      copyMem(v.string[0].addr, input[value.start].unsafeAddr, value.len)
 
 proc fromJson*[T](x: typedesc[T], input: string): T =
   let root = parseJson(input)
@@ -1260,10 +1290,14 @@ proc toJson*[T: object](src: T, s: var string) =
   s.add '}'
 
 proc toJson*(src: RawJson, s: var string) =
-  if src.string.len > 0:
-    let tmp = s.len
-    s.setLen(tmp + src.string.len)
-    copyMem(s[tmp].addr, src.string[0].unsafeAddr, src.string.len)
+  when defined(js):
+    for c in src.string:
+      s.add c
+  else:
+    if src.string.len > 0:
+      let tmp = s.len
+      s.setLen(tmp + src.string.len)
+      copyMem(s[tmp].addr, src.string[0].unsafeAddr, src.string.len)
 
 proc toJson*[T](src: T): string =
   src.toJson(result)
@@ -1272,13 +1306,9 @@ proc dump(node: JsonValue, input: string): string =
   ## For testing
   case node.kind
   of StringValue:
-    let tmp = result.len
-    result.setLen(result.len + node.len)
-    copyMem(result[tmp].addr, input[node.start].unsafeAddr, node.len)
+    result.add input[node.start ..< node.start + node.len]
   of NumberValue:
-    let tmp = result.len
-    result.setLen(result.len + node.len)
-    copyMem(result[tmp].addr, input[node.start].unsafeAddr, node.len)
+    result.add input[node.start ..< node.start + node.len]
   of BooleanValue:
     if node.b:
       result.add "true"
