@@ -568,6 +568,7 @@ proc fromJson*(v: var char, value: JsonValue, input: string) =
   elif value.kind == NullValue:
     discard
   else:
+    echo value
     error(
       "Expected " & $StringValue & ", got " & $value.kind &
       " at " & $value.start
@@ -579,6 +580,7 @@ proc fromJson*(v: var string, value: JsonValue, input: string) =
   elif value.kind == NullValue:
     discard
   else:
+    echo value
     error(
       "Expected " & $StringValue & ", got " & $value.kind &
       " at " & $value.start
