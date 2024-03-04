@@ -702,7 +702,7 @@ proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
     if value.kind == ObjectValue:
       for k, v in v.fieldPairs:
         for i in 0 ..< value.o.len:
-          if value.o[i][0] == k: # TODO: snake case?
+          if value.o[i][0] == k:
             fromJson(v, value.o[i][1], input)
             break
       return
@@ -838,7 +838,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
               const renamedField = if parts[0] != "": parts[0] else: k
               for i in 0 ..< value.o.len:
                 let key {.cursor.} = value.o[i][0]
-                if key == renamedField: # TODO: snake case?
+                if key == renamedField:
                   var tmp: type(obj.discriminatorField)
                   fromJson(tmp, value.o[i][1], input)
                   foundDiscriminator = true
@@ -849,7 +849,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
           else:
             for i in 0 ..< value.o.len:
               let key {.cursor.} = value.o[i][0]
-              if key == k: # TODO: snake case?
+              if key == k:
                 var tmp: type(obj.discriminatorField)
                 fromJson(tmp, value.o[i][1], input)
                 foundDiscriminator = true
@@ -874,7 +874,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
             var found: bool
           for i in 0 ..< value.o.len:
             let key {.cursor.} = value.o[i][0]
-            if key == renamedField: # TODO: snake case?
+            if key == renamedField:
               when required:
                 found = true
               when asString:
@@ -899,7 +899,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       else:
         for i in 0 ..< value.o.len:
           let key {.cursor.} = value.o[i][0]
-          if key == k: # TODO: snake case?
+          if key == k:
             fromJson(v, value.o[i][1], input)
             break
 
