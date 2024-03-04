@@ -10,7 +10,6 @@ nim	JsonValueKind	sunny.html#JsonValueKind	enum JsonValueKind		20
 nim	JsonValue	sunny.html#JsonValue	object JsonValue		23
 nim	SomeTable	sunny.html#SomeTable	type SomeTable		35
 nim	unescapeString	sunny.html#unescapeString,JsonValue,string	proc unescapeString(value: JsonValue; input: string): string		130
-nim	parseJson	sunny.html#parseJson,string	proc parseJson(input: string): JsonValue		314
 nim	fromJson	sunny.html#fromJson,bool,JsonValue,string	proc fromJson(v: var bool; value: JsonValue; input: string)		448
 nim	fromJson	sunny.html#fromJson,SomeUnsignedInt,JsonValue,string	proc fromJson(v: var SomeUnsignedInt; value: JsonValue; input: string)		449
 nim	fromJson	sunny.html#fromJson,SomeSignedInt,JsonValue,string	proc fromJson(v: var SomeSignedInt; value: JsonValue; input: string)		450
