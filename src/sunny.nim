@@ -459,7 +459,6 @@ proc fromJson*(v: var SomeSignedInt, value: JsonValue, input: string)
 proc fromJson*(v: var SomeFloat, value: JsonValue, input: string)
 proc fromJson*(v: var char, value: JsonValue, input: string)
 proc fromJson*(v: var string, value: JsonValue, input: string)
-proc fromJson*(v: var RawJson, value: JsonValue, input: string)
 proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string)
 proc fromJson*[T: array](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: enum](v: var T, value: JsonValue, input: string)
@@ -471,6 +470,7 @@ proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string)
 proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string)
 proc fromJson*[T: ref](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string)
+proc fromJson*(v: var RawJson, value: JsonValue, input: string)
 
 proc fromJson*(v: var bool, value: JsonValue, input: string) =
   if value.kind == BooleanValue:
@@ -587,11 +587,6 @@ proc fromJson*(v: var string, value: JsonValue, input: string) =
       "Expected " & $StringValue & ", got " & $value.kind &
       " at " & $value.start
     )
-
-proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
-  if value.len > 0:
-    v.string.setLen(value.len)
-    copyMem(v.string[0].addr, input[value.start].unsafeAddr, value.len)
 
 proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
 
@@ -923,6 +918,11 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
+proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
+  if value.len > 0:
+    v.string.setLen(value.len)
+    copyMem(v.string[0].addr, input[value.start].unsafeAddr, value.len)
+
 proc fromJson*[T](x: typedesc[T], input: string): T =
   let root = parseJson(input)
   result.fromJson(root, input)
@@ -933,7 +933,6 @@ proc isEmpty(src: SomeSignedInt): bool
 proc isEmpty(src: SomeFloat): bool
 proc isEmpty(src: char): bool
 proc isEmpty(src: string): bool
-proc isEmpty(src: RawJson): bool
 proc isEmpty(src: std.JsonNode): bool
 proc isEmpty[T: array](src: T): bool
 proc isEmpty[T: enum](src: T): bool
@@ -945,6 +944,7 @@ proc isEmpty[T](src: (SomeSet[T] | set[T])): bool
 proc isEmpty[T](src: SomeTable[string, T]): bool
 proc isEmpty[T: ref](src: T): bool
 proc isEmpty[T: object](src: T): bool
+proc isEmpty(src: RawJson): bool
 
 proc isEmpty(src: bool): bool =
   not src
@@ -963,9 +963,6 @@ proc isEmpty(src: char): bool =
 
 proc isEmpty(src: string): bool =
   src == ""
-
-proc isEmpty(src: RawJson): bool =
-  src.string == ""
 
 proc isEmpty(src: std.JsonNode): bool =
   src == nil
@@ -1011,13 +1008,15 @@ proc isEmpty[T: object](src: T): bool =
       return false
   true
 
+proc isEmpty(src: RawJson): bool =
+  src.string == ""
+
 proc toJson*(src: bool, s: var string)
 proc toJson*(src: SomeUnsignedInt, s: var string)
 proc toJson*(src: SomeSignedInt, s: var string)
 proc toJson*(src: SomeFloat, s: var string)
 proc toJson*(src: char, s: var string)
 proc toJson*(src: string, s: var string)
-proc toJson*(src: RawJson, s: var string)
 proc toJson*(src: std.JsonNode, s: var string)
 proc toJson*[T: array](src: T, s: var string)
 proc toJson*[T: enum](src: T, s: var string)
@@ -1029,6 +1028,7 @@ proc toJson*[T](src: (SomeSet[T] | set[T]), s: var string)
 proc toJson*[T](src: SomeTable[string, T], s: var string)
 proc toJson*[T: ref](src: T, s: var string)
 proc toJson*[T: object](src: T, s: var string)
+proc toJson*(src: RawJson, s: var string)
 
 proc toJson*(src: bool, s: var string) =
   if src:
@@ -1097,12 +1097,6 @@ proc toJson*(src: string, s: var string) =
   copy(s, src, copyStart, i - copyStart)
 
   s.add '"'
-
-proc toJson*(src: RawJson, s: var string) =
-  if src.string.len > 0:
-    let tmp = s.len
-    s.setLen(tmp + src.string.len)
-    copyMem(s[tmp].addr, src.string[0].unsafeAddr, src.string.len)
 
 proc toJson*(src: std.JsonNode, s: var string) =
   if src == nil:
@@ -1264,6 +1258,12 @@ proc toJson*[T: object](src: T, s: var string) =
       inc i
 
   s.add '}'
+
+proc toJson*(src: RawJson, s: var string) =
+  if src.string.len > 0:
+    let tmp = s.len
+    s.setLen(tmp + src.string.len)
+    copyMem(s[tmp].addr, src.string[0].unsafeAddr, src.string.len)
 
 proc toJson*[T](src: T): string =
   src.toJson(result)
