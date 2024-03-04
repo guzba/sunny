@@ -311,7 +311,7 @@ proc skipWhitespace(input: string, i: var int) =
 when defined(release) and defined(nimHasQuirky):
   {.pop.}
 
-proc parseJson*(input: string): JsonValue =
+proc parseJson(input: string): JsonValue =
   let invalidAt = validateUtf8(input)
   if invalidAt != -1:
     error("Invalid UTF-8 character at " & $invalidAt)
