@@ -246,20 +246,22 @@ proc parseNumber(input: string, i: var int): int =
   return len
 
 proc parseBoolean(input: string, i: var int): bool {.inline.} =
-  if i + 3 < input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
-    i += 4
-    return true
-  elif i + 4 < input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
-    i += 5
-    return false
-  else:
-    error("Expected true or false at " & $i)
+  {.gcsafe.}:
+    if i + 3 < input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
+      i += 4
+      return true
+    elif i + 4 < input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
+      i += 5
+      return false
+    else:
+      error("Expected true or false at " & $i)
 
 proc parseNull(input: string, i: var int) {.inline.} =
-  if i + 3 < input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
-    i += 4
-  else:
-    error("Expected null at " & $i)
+  {.gcsafe.}:
+    if i + 3 < input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
+      i += 4
+    else:
+      error("Expected null at " & $i)
 
 when defined(release) and defined(nimHasQuirky):
   proc skipWhitespace(input: string, i: var int) {.inline, quirky.}
