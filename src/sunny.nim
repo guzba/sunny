@@ -718,6 +718,8 @@ proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
     )
 
 proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
+  when T is RawJson:
+    {.error: "WTF".}
   var tmp: T.distinctBase
   fromJson(tmp, value, input)
   v = cast[T](tmp)
