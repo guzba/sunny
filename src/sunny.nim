@@ -463,7 +463,7 @@ proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string)
 proc fromJson*[T: array](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: enum](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string)
-proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string)
+# proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string)
 proc fromJson*[T](v: var Option[T], value: JsonValue, input: string)
 proc fromJson*[T](v: var seq[T], value: JsonValue, input: string)
 proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string)
@@ -717,10 +717,10 @@ proc fromJson*[T: tuple](v: var T, value: JsonValue, input: string) =
       " at " & $value.start
     )
 
-proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
-  var tmp: T.distinctBase
-  fromJson(tmp, value, input)
-  v = cast[T](tmp)
+# proc fromJson*[T: distinct](v: var T, value: JsonValue, input: string) =
+#   var tmp: T.distinctBase
+#   fromJson(tmp, value, input)
+#   v = cast[T](tmp)
 
 proc fromJson*[T](v: var Option[T], value: JsonValue, input: string) =
   if value.kind == NullValue:
@@ -937,7 +937,7 @@ proc isEmpty(src: std.JsonNode): bool
 proc isEmpty[T: array](src: T): bool
 proc isEmpty[T: enum](src: T): bool
 proc isEmpty[T: tuple](src: T): bool
-proc isEmpty[T: distinct](src: T): bool
+# proc isEmpty[T: distinct](src: T): bool
 proc isEmpty[T](src: Option[T]): bool
 proc isEmpty[T](src: seq[T]): bool
 proc isEmpty[T](src: (SomeSet[T] | set[T])): bool
@@ -984,8 +984,8 @@ proc isEmpty[T: tuple](src: T): bool =
         return false
   true
 
-proc isEmpty[T: distinct](src: T): bool =
-  src.distinctBase.isEmpty()
+# proc isEmpty[T: distinct](src: T): bool =
+#   src.distinctBase.isEmpty()
 
 proc isEmpty[T](src: Option[T]): bool =
   not src.isSome
@@ -1021,7 +1021,7 @@ proc toJson*(src: std.JsonNode, s: var string)
 proc toJson*[T: array](src: T, s: var string)
 proc toJson*[T: enum](src: T, s: var string)
 proc toJson*[T: tuple](src: T, s: var string)
-proc toJson*[T: distinct](src: T, s: var string)
+# proc toJson*[T: distinct](src: T, s: var string)
 proc toJson*[T](src: Option[T], s: var string)
 proc toJson*[T](src: seq[T], s: var string)
 proc toJson*[T](src: (SomeSet[T] | set[T]), s: var string)
@@ -1165,8 +1165,8 @@ proc toJson*[T: tuple](src: T, s: var string) =
       e.toJson(s)
     s.add ']'
 
-proc toJson*[T: distinct](src: T, s: var string) =
-  cast[T.distinctBase](src).toJson(s)
+# proc toJson*[T: distinct](src: T, s: var string) =
+#   cast[T.distinctBase](src).toJson(s)
 
 proc toJson*[T](src: Option[T], s: var string) =
   if src.isSome:
