@@ -995,7 +995,7 @@ proc isEmpty[T: ref](src: T): bool =
 
 proc isEmpty[T: object](src: T): bool =
   for _, v in src.fieldPairs:
-    if not v.isEmpy():
+    if not v.isEmpty():
       return false
   true
 

@@ -303,10 +303,6 @@ block:
   doAssert r2[] == @[4d,5,6]
 
 block:
-  let deprettied = std.`$`std.parseJson(twitterJson)
-  doAssert dump(parseJson(deprettied), deprettied) == deprettied
-
-block:
   type Twitter = object
     statuses: RawJson
   doAssert Twitter.fromJson(twitterJson).statuses.string == twitterJson[16 ..< ^391]

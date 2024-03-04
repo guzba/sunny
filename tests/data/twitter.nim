@@ -1,3 +1,5 @@
+import std/options
+
 type
   StatusMetadata* = object
     result_type*: string
@@ -26,7 +28,7 @@ type
     screen_name*: string
     location*: string
     description*: string
-    url*: string
+    url*: Option[string]
     entities*: UserEntities
     protected*: bool
     followers_count*: int
@@ -34,8 +36,8 @@ type
     listed_count*: int
     created_at*: string
     favourites_count*: int
-    utc_offset*: int
-    time_zone*: string
+    utc_offset*: Option[int]
+    time_zone*: Option[string]
     geo_enabled*: bool
     verified*: bool
     statuses_count*: int
@@ -66,7 +68,7 @@ type
     name*: string
     id*: int
     id_str*: string
-    indicies*: seq[int]
+    indices*: seq[int]
 
   MediaSize* = object
     w*: int
@@ -89,7 +91,9 @@ type
     display_url*: string
     expanded_url*: string
     `type`*: string
-    size*: MediaSizes
+    sizes*: MediaSizes
+    source_status_id*: int
+    source_status_id_str*: string
 
   HashTag* = object
     text*: string
@@ -102,6 +106,31 @@ type
     user_mentions*: seq[UserMention]
     media*: seq[Media]
 
+  RetweetedStatus* = object
+    metadata*: StatusMetadata
+    created_at*: string
+    id*: int
+    id_str*: string
+    text*: string
+    source*: string
+    truncated*: bool
+    in_reply_to_status_id*: Option[int]
+    in_reply_to_status_id_str*: Option[string]
+    in_reply_to_user_id*: Option[int]
+    in_reply_to_user_id_str*: Option[string]
+    in_reply_to_screen_name*: Option[string]
+    user*: User
+    geo*: Option[string]
+    coordinates*: Option[string]
+    place*: Option[string]
+    contributors*: Option[string]
+    retweet_count*: int
+    favorite_count*: int
+    entities*: StatusEntities
+    favorited*: bool
+    retweeted*: bool
+    lang*: string
+
   Status* = object
     metadata*: StatusMetadata
     created_at*: string
@@ -110,16 +139,17 @@ type
     text*: string
     source*: string
     truncated*: bool
-    in_reply_to_status_id*: int
-    in_reply_to_status_id_str*: string
-    in_reply_to_user_id*: int
-    in_reply_to_user_id_str*: string
-    in_reply_to_screen_name*: string
+    in_reply_to_status_id*: Option[int]
+    in_reply_to_status_id_str*: Option[string]
+    in_reply_to_user_id*: Option[int]
+    in_reply_to_user_id_str*: Option[string]
+    in_reply_to_screen_name*: Option[string]
     user*: User
-    geo*: string
-    coordinates*: string
-    place*: string
-    contributors*: string
+    geo*: Option[string]
+    coordinates*: Option[string]
+    place*: Option[string]
+    contributors*: Option[string]
+    retweeted_status*: Option[RetweetedStatus]
     retweet_count*: int
     favorite_count*: int
     entities*: StatusEntities
@@ -143,6 +173,4 @@ type
     statuses*: seq[Status]
     search_metadata*: SearchMetadata
 
-let
-  twitterJson* = readFile("tests/data/twitter.json")
-  twitterJsonNoWhitespace* = readFile("tests/data/twitter_nowhitespace.json")
+let twitterJson* = readFile("tests/data/twitter.json")
