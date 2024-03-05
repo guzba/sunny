@@ -386,11 +386,19 @@ block:
     doAssert expected.toJson() == """{"a":null,"b":null,"c":null,"foo":{}}"""
 
 block:
-  type OptionalOmitEmptyTest = object
-    v {.json: ",omitempty".}: Option[int]
+  type
+    SkippedField = object
+      i {.json: "-".}: int
+
+    OptionalOmitEmptyTest = object
+      v {.json: ",omitempty".}: Option[int]
+      w {.json: ",omitempty".}: SkippedField
 
   doAssert OptionalOmitEmptyTest().toJson() == """{}"""
-  doAssert OptionalOmitEmptyTest(v: some(0)).toJson() == """{"v":0}"""
+  doAssert OptionalOmitEmptyTest(
+    v: some(0),
+    w: SkippedField(i: 333)
+  ).toJson() == """{"v":0}"""
 
 block:
   type RequiredTest = object

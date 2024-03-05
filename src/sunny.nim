@@ -1058,8 +1058,18 @@ proc isEmpty[T: ref](src: T): bool =
 
 proc isEmpty[T: object](src: T): bool =
   for _, v in src.fieldPairs:
-    if not v.isEmpty():
-      return false
+    when v.hasCustomPragma(json):
+      const
+        customPragmaVal = v.getCustomPragmaVal(json)
+        parts = customPragmaVal.split(',')
+      when parts[0] == "-" and parts.len == 1: # "-" case
+        discard # Skipped fields are empty
+      else:
+        if not v.isEmpty():
+          return false
+    else:
+      if not v.isEmpty():
+        return false
   true
 
 proc isEmpty(src: RawJson): bool =
