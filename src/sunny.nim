@@ -196,18 +196,7 @@ proc parseString(input: string, i: var int): int =
 
   return len
 
-proc parseNumber(input: string, i: var int): int =
-  let
-    start = i
-    after = input.find({' ', '\n', '\r', '\n', ',', '}', ']'}, start = i + 1)
-  var len: int
-  if after == -1:
-    len = input.len - i
-    i = input.len
-  else:
-    len = after - i
-    i = after
-
+proc parseNumber(input: string, start, len: int) =
   var ni = start
 
   if input[start] == '-':
@@ -217,7 +206,7 @@ proc parseNumber(input: string, i: var int): int =
 
   if input[ni] == '0':
     if ni == start + len - 1:
-      return len
+      return
     # Check there is no leading zero unless followed by a '.'
     if input[ni + 1] != '.':
       error("Invalid number at " & $start)
@@ -246,6 +235,20 @@ proc parseNumber(input: string, i: var int): int =
       inc ni
     else:
       error("Invalid number at " & $start)
+
+proc parseNumber(input: string, i: var int): int =
+  let
+    start = i
+    after = input.find({' ', '\n', '\r', '\n', ',', '}', ']'}, start = i + 1)
+  var len: int
+  if after == -1:
+    len = input.len - i
+    i = input.len
+  else:
+    len = after - i
+    i = after
+
+  parseNumber(input, start, len)
 
   return len
 
@@ -600,8 +603,6 @@ proc fromJson*(v: var char, value: JsonValue, input: string) =
   elif value.kind == NullValue:
     discard
   else:
-    {.gcsafe.}:
-      echo value
     error(
       "Expected " & $StringValue & ", got " & $value.kind &
       " at " & $value.start
@@ -613,8 +614,6 @@ proc fromJson*(v: var string, value: JsonValue, input: string) =
   elif value.kind == NullValue:
     discard
   else:
-    {.gcsafe.}:
-      echo value
     error(
       "Expected " & $StringValue & ", got " & $value.kind &
       " at " & $value.start
@@ -866,6 +865,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
               {.error: $T & " variant discriminator field cannot be omitted".}
             else:
               const renamedField = if parts[0] != "": parts[0] else: k
+              # TODO: stringFlag
               for i in 0 ..< value.o.len:
                 if value.o[i][0] == renamedField:
                   var tmp: type(obj.discriminatorField)
@@ -895,16 +895,16 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
           discard
         else:
           const
-            required = "required" in parts[1 .. ^1]
-            asString = "string" in parts[1 .. ^1]
+            requiredFlag = "required" in parts[1 .. ^1]
+            stringFlag = "string" in parts[1 .. ^1]
             renamedField = if parts[0] != "": parts[0] else: k
-          when required:
+          when requiredFlag:
             var found: bool
           for i in 0 ..< value.o.len:
             if value.o[i][0] == renamedField:
-              when required:
+              when requiredFlag:
                 found = true
-              when asString:
+              when stringFlag:
                 var tmp: JsonValue
                 when v is bool:
                   tmp = JsonValue(kind: BooleanValue)
@@ -912,6 +912,30 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
                   tmp.b = parseBoolean(input, ii)
                 elif v is SomeNumber:
                   tmp = JsonValue(kind: NumberValue)
+                  let
+                    start = value.o[i][1].start + 1
+                    len = value.o[i][1].len - 2
+                  parseNumber(input, start, len)
+                elif v is Option[bool]:
+                  if input[value.o[i][1].start + 1] == 'n':
+                    tmp = JsonValue(kind: NullValue)
+                    var ii = value.o[i][1].start + 1
+                    parseNull(input, ii)
+                  else:
+                    tmp = JsonValue(kind: BooleanValue)
+                    var ii = value.o[i][1].start + 1
+                    tmp.b = parseBoolean(input, ii)
+                elif v is Option[SomeNumber]:
+                  if input[value.o[i][1].start + 1] == 'n':
+                    tmp = JsonValue(kind: NullValue)
+                    var ii = value.o[i][1].start + 1
+                    parseNull(input, ii)
+                  else:
+                    tmp = JsonValue(kind: NumberValue)
+                    let
+                      start = value.o[i][1].start + 1
+                      len = value.o[i][1].len - 2
+                    parseNumber(input, start, len)
                 else:
                   {.error: "Using the string JSON option only applies to bool, integer and floating-point fields".}
                 tmp.start = value.o[i][1].start + 1
@@ -920,7 +944,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
               else:
                 fromJson(v, value.o[i][1], input)
               break
-          when required:
+          when requiredFlag:
             if not found:
               error("Missing required field: " & renamedField)
       else:
@@ -1260,9 +1284,9 @@ proc toJson*[T: object](src: T, s: var string) =
             s.add ','
           const tmp = renamedKey.toJson() & ':'
           s.add tmp
-          const asString = "string" in parts[1 .. ^1]
-          when asString:
-            when v is (bool | SomeNumber):
+          const stringFlag = "string" in parts[1 .. ^1]
+          when stringFlag:
+            when v is (bool | SomeNumber | Option[bool] | Option[SomeNumber]):
               s.add '"'
               v.toJson(s)
               s.add '"'

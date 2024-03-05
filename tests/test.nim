@@ -495,12 +495,17 @@ block:
     b {.json: ",string".}: uint
     c {.json: ",string".}: int
     d {.json: ",string".}: float
+    e {.json: ",string".}: Option[bool]
+    f {.json: ",string".}: Option[float]
+    g {.json: ",string".}: Option[int]
 
-  const encoded = """{"a":"true","b":"3","c":"-1","d":"2.0"}"""
+  const encoded = """{"a":"true","b":"3","c":"-1","d":"2.0","e":"true","f":"3.0","g":"null"}"""
 
-  doAssert Holder(a: true, b: 3, c: -1, d: 2.0).toJson() == encoded
+  let holder = Holder(a: true, b: 3, c: -1, d: 2.0, e: some(true), f: some(3.0), g: none(int))
 
-  doAssert Holder.fromJson(encoded) == Holder(a: true, b: 3, c: -1, d: 2.0)
+  doAssert holder.toJson() == encoded
+
+  doAssert Holder.fromJson(encoded) == holder
 
 
 
