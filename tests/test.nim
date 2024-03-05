@@ -513,6 +513,13 @@ block:
 
   doAssert Holder.fromJson(encoded) == holder
 
+block:
+  type ManyTags = object
+    a {.json: ",string,omitempty"}: int
+
+  doAssert ManyTags().toJson() == "{}"
+  doAssert ManyTags(a: 1).toJson() == """{"a":"1"}"""
+
 # block:
 #   type Duplicate = object
 #     a: int
