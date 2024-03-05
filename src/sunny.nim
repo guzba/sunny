@@ -860,11 +860,12 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
           when v.hasCustomPragma(json):
             const
               customPragmaVal = v.getCustomPragmaVal(json)
-              parts = customPragmaVal.split(',')
-            when parts[0] == "-" and parts.len == 1: # "-" case
+              tags = customPragmaVal.split(',')
+            validateTags(tags)
+            when tags[0] == "-" and tags.len == 1: # "-" case
               {.error: $T & " variant discriminator field cannot be omitted".}
             else:
-              const renamedField = if parts[0] != "": parts[0] else: k
+              const renamedField = if tags[0] != "": tags[0] else: k
               # TODO: stringFlag
               for i in 0 ..< value.o.len:
                 if value.o[i][0] == renamedField:
@@ -890,14 +891,15 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       when v.hasCustomPragma(json):
         const
           customPragmaVal = v.getCustomPragmaVal(json)
-          parts = customPragmaVal.split(',')
-        when parts[0] == "-" and parts.len == 1: # "-" case
+          tags = customPragmaVal.split(',')
+        validateTags(tags)
+        when tags[0] == "-" and tags.len == 1: # "-" case
           discard
         else:
           const
-            requiredFlag = "required" in parts[1 .. ^1]
-            stringFlag = "string" in parts[1 .. ^1]
-            renamedField = if parts[0] != "": parts[0] else: k
+            requiredFlag = "required" in tags[1 .. ^1]
+            stringFlag = "string" in tags[1 .. ^1]
+            renamedField = if tags[0] != "": tags[0] else: k
           when requiredFlag:
             var found: bool
           for i in 0 ..< value.o.len:
@@ -1033,8 +1035,8 @@ proc isEmpty[T: object](src: T): bool =
     when v.hasCustomPragma(json):
       const
         customPragmaVal = v.getCustomPragmaVal(json)
-        parts = customPragmaVal.split(',')
-      when parts[0] == "-" and parts.len == 1: # "-" case
+        tags = customPragmaVal.split(',')
+      when tags[0] == "-" and tags.len == 1: # "-" case
         discard # Skipped fields are empty
       else:
         if not v.isEmpty():
@@ -1244,6 +1246,19 @@ proc toJson*[T: ref](src: T, s: var string) =
   else:
     src[].toJson(s)
 
+proc validateTags(tags: static seq[string]) =
+  when tags.len > 4:
+    {.error: ("Too many JSON field tags").}
+  when tags.len >= 2:
+    when tags[1] notin ["omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[1]).}
+  when tags.len >= 3:
+    when tags[2] notin ["omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[2]).}
+  when tags.len >= 4:
+    when tags[3] notin ["omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[3]).}
+
 proc toJson*[T: object](src: T, s: var string) =
   s.add '{'
 
@@ -1252,21 +1267,22 @@ proc toJson*[T: object](src: T, s: var string) =
     when v.hasCustomPragma(json):
       const
         customPragmaVal = v.getCustomPragmaVal(json)
-        parts = customPragmaVal.split(',')
-      when parts[0] == "-" and parts.len == 1: # "-" case
+        tags = customPragmaVal.split(',')
+      validateTags(tags)
+      when tags[0] == "-" and tags.len == 1: # "-" case
         discard
       else:
         template body() =
           const renamedKey =
-            if parts[0] != "":
-              parts[0]
+            if tags[0] != "":
+              tags[0]
             else:
               k
           if i > 0:
             s.add ','
           const tmp = renamedKey.toJson() & ':'
           s.add tmp
-          const stringFlag = "string" in parts[1 .. ^1]
+          const stringFlag = "string" in tags[1 .. ^1]
           when stringFlag:
             when v is (SomeNumber | Option[SomeNumber]):
               s.add '"'
@@ -1278,7 +1294,7 @@ proc toJson*[T: object](src: T, s: var string) =
             v.toJson(s)
           inc i
 
-        const omitempty = "omitempty" in parts[1 .. ^1]
+        const omitempty = "omitempty" in tags[1 .. ^1]
         when omitempty:
           if not v.isEmpty():
             body()
