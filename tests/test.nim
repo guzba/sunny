@@ -505,9 +505,9 @@ block:
     e {.json: ",string".}: Option[float]
     f {.json: ",string".}: Option[int]
 
-  const encoded = """{"b":"3","c":"-1","d":"2.0","e":"3.0","f":"null"}"""
+  const encoded = """{"b":"3","c":"-1","d":"2.0","e":"3.0","f":"44"}"""
 
-  let holder = Holder(b: 3, c: -1, d: 2.0, e: some(3.0), f: none(int))
+  let holder = Holder(b: 3, c: -1, d: 2.0, e: some(3.0), f: some(44))
 
   doAssert holder.toJson() == encoded
 

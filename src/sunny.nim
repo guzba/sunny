@@ -906,23 +906,12 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
                 found = true
               when stringFlag:
                 var tmp: JsonValue
-                when v is SomeNumber:
+                when v is (SomeNumber | Option[SomeNumber]):
                   tmp = JsonValue(kind: NumberValue)
                   let
                     start = value.o[i][1].start + 1
                     len = value.o[i][1].len - 2
                   parseNumber(input, start, len)
-                elif v is Option[SomeNumber]:
-                  if input[value.o[i][1].start + 1] == 'n':
-                    tmp = JsonValue(kind: NullValue)
-                    var ii = value.o[i][1].start + 1
-                    parseNull(input, ii)
-                  else:
-                    tmp = JsonValue(kind: NumberValue)
-                    let
-                      start = value.o[i][1].start + 1
-                      len = value.o[i][1].len - 2
-                    parseNumber(input, start, len)
                 else:
                   {.error: "Using the string JSON option only applies to integer and floating-point fields".}
                 tmp.start = value.o[i][1].start + 1
