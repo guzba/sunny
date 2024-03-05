@@ -47,6 +47,8 @@ template error(msg: string) =
 when defined(release):
   {.push checks: off.}
 
+{.push gcsafe.}
+
 proc getu4(input: string, start: int): int32 =
   for i in 0 ..< 4:
     let c = input[start + i]
@@ -850,6 +852,19 @@ macro newObjectVariant(obj: typed, value: typed): untyped =
 
 template json*(v: string) {.pragma.}
 
+proc validateTags(tags: static seq[string]) =
+  when tags.len > 4:
+    {.error: ("Too many JSON field tags").}
+  when tags.len >= 2:
+    when tags[1] notin ["", "omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[1]).}
+  when tags.len >= 3:
+    when tags[2] notin ["", "omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[2]).}
+  when tags.len >= 4:
+    when tags[3] notin ["", "omitempty", "required", "string"]:
+      {.error: ("Unrecognized JSON field tag: " & tags[3]).}
+
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when obj.isObjectVariant:
@@ -1246,19 +1261,6 @@ proc toJson*[T: ref](src: T, s: var string) =
   else:
     src[].toJson(s)
 
-proc validateTags(tags: static seq[string]) =
-  when tags.len > 4:
-    {.error: ("Too many JSON field tags").}
-  when tags.len >= 2:
-    when tags[1] notin ["", "omitempty", "required", "string"]:
-      {.error: ("Unrecognized JSON field tag: " & tags[1]).}
-  when tags.len >= 3:
-    when tags[2] notin ["", "omitempty", "required", "string"]:
-      {.error: ("Unrecognized JSON field tag: " & tags[2]).}
-  when tags.len >= 4:
-    when tags[3] notin ["", "omitempty", "required", "string"]:
-      {.error: ("Unrecognized JSON field tag: " & tags[3]).}
-
 proc toJson*[T: object](src: T, s: var string) =
   s.add '{'
 
@@ -1355,6 +1357,8 @@ proc dump(node: JsonValue, input: string): string =
         result.add ','
       result.add dump(node.a[i], input)
     result.add ']'
+
+{.pop.}
 
 when defined(release):
   {.pop.}
