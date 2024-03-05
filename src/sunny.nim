@@ -1250,13 +1250,13 @@ proc validateTags(tags: static seq[string]) =
   when tags.len > 4:
     {.error: ("Too many JSON field tags").}
   when tags.len >= 2:
-    when tags[1] notin ["omitempty", "required", "string"]:
+    when tags[1] notin ["", "omitempty", "required", "string"]:
       {.error: ("Unrecognized JSON field tag: " & tags[1]).}
   when tags.len >= 3:
-    when tags[2] notin ["omitempty", "required", "string"]:
+    when tags[2] notin ["", "omitempty", "required", "string"]:
       {.error: ("Unrecognized JSON field tag: " & tags[2]).}
   when tags.len >= 4:
-    when tags[3] notin ["omitempty", "required", "string"]:
+    when tags[3] notin ["", "omitempty", "required", "string"]:
       {.error: ("Unrecognized JSON field tag: " & tags[3]).}
 
 proc toJson*[T: object](src: T, s: var string) =
