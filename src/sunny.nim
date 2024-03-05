@@ -905,18 +905,14 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
               when requiredFlag:
                 found = true
               when stringFlag:
-                var tmp: JsonValue
                 when v is (SomeNumber | Option[SomeNumber]):
-                  tmp = JsonValue(kind: NumberValue)
-                  let
-                    start = value.o[i][1].start + 1
-                    len = value.o[i][1].len - 2
-                  parseNumber(input, start, len)
+                  var tmp = JsonValue(kind: NumberValue)
+                  tmp.start = value.o[i][1].start + 1
+                  tmp.len = value.o[i][1].len - 2
+                  parseNumber(input, tmp.start, tmp.len)
+                  fromJson(v, tmp, input)
                 else:
                   {.error: "Using the string JSON option only applies to integer and floating-point fields".}
-                tmp.start = value.o[i][1].start + 1
-                tmp.len = value.o[i][1].len - 2
-                fromJson(v, tmp, input)
               else:
                 fromJson(v, value.o[i][1], input)
               break
