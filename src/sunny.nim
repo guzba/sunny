@@ -906,25 +906,12 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
                 found = true
               when stringFlag:
                 var tmp: JsonValue
-                when v is bool:
-                  tmp = JsonValue(kind: BooleanValue)
-                  var ii = value.o[i][1].start + 1
-                  tmp.b = parseBoolean(input, ii)
-                elif v is SomeNumber:
+                when v is SomeNumber:
                   tmp = JsonValue(kind: NumberValue)
                   let
                     start = value.o[i][1].start + 1
                     len = value.o[i][1].len - 2
                   parseNumber(input, start, len)
-                elif v is Option[bool]:
-                  if input[value.o[i][1].start + 1] == 'n':
-                    tmp = JsonValue(kind: NullValue)
-                    var ii = value.o[i][1].start + 1
-                    parseNull(input, ii)
-                  else:
-                    tmp = JsonValue(kind: BooleanValue)
-                    var ii = value.o[i][1].start + 1
-                    tmp.b = parseBoolean(input, ii)
                 elif v is Option[SomeNumber]:
                   if input[value.o[i][1].start + 1] == 'n':
                     tmp = JsonValue(kind: NullValue)
@@ -937,7 +924,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
                       len = value.o[i][1].len - 2
                     parseNumber(input, start, len)
                 else:
-                  {.error: "Using the string JSON option only applies to bool, integer and floating-point fields".}
+                  {.error: "Using the string JSON option only applies to integer and floating-point fields".}
                 tmp.start = value.o[i][1].start + 1
                 tmp.len = value.o[i][1].len - 2
                 fromJson(v, tmp, input)
@@ -1296,12 +1283,12 @@ proc toJson*[T: object](src: T, s: var string) =
           s.add tmp
           const stringFlag = "string" in parts[1 .. ^1]
           when stringFlag:
-            when v is (bool | SomeNumber | Option[bool] | Option[SomeNumber]):
+            when v is (SomeNumber | Option[SomeNumber]):
               s.add '"'
               v.toJson(s)
               s.add '"'
             else:
-              {.error: "Using the string JSON option only applies to bool, integer and floating-point fields".}
+              {.error: "Using the string JSON option only applies to integer and floating-point fields".}
           else:
             v.toJson(s)
           inc i

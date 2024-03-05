@@ -499,17 +499,15 @@ block:
 
 block:
   type Holder = object
-    a {.json: ",string".}: bool
     b {.json: ",string".}: uint
     c {.json: ",string".}: int
     d {.json: ",string".}: float
-    e {.json: ",string".}: Option[bool]
-    f {.json: ",string".}: Option[float]
-    g {.json: ",string".}: Option[int]
+    e {.json: ",string".}: Option[float]
+    f {.json: ",string".}: Option[int]
 
-  const encoded = """{"a":"true","b":"3","c":"-1","d":"2.0","e":"true","f":"3.0","g":"null"}"""
+  const encoded = """{"b":"3","c":"-1","d":"2.0","e":"3.0","f":"null"}"""
 
-  let holder = Holder(a: true, b: 3, c: -1, d: 2.0, e: some(true), f: some(3.0), g: none(int))
+  let holder = Holder(b: 3, c: -1, d: 2.0, e: some(3.0), f: none(int))
 
   doAssert holder.toJson() == encoded
 
