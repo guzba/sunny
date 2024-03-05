@@ -513,6 +513,13 @@ block:
 
   doAssert Holder.fromJson(encoded) == holder
 
+# block:
+#   type Duplicate = object
+#     a: int
+#     b {.json: "a".}: string
+
+#   doAssertRaises CatchableError:
+#     discard Duplicate().toJson()
 
 
 
