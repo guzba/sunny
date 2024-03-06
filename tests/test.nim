@@ -513,6 +513,13 @@ block:
 
   doAssert Holder.fromJson(encoded) == holder
 
+  type Holder2 = object
+    a {.json: ",string".}: int
+
+  doAssert Holder2(a: 1).toJson() == """{"a":"1"}"""
+
+  doAssert Holder2.fromJson("""{"a":2}""") == Holder2(a: 2)
+
 block:
   type ManyTags = object
     a {.json: ",string,omitempty"}: int
