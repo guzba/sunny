@@ -137,7 +137,7 @@ While using field tags solves many of the most common problems when working with
 
 Taking inspiration from [jsony](https://github.com/treeform/jsony), Sunny supports calling custom `fromJson` and `toJson` hooks for types where you need more control than field tags provide.
 
-For the example below lets imagine that `Example.data` holds binary data. Binary data does not mix with JSON since JSON which must be UTF-8 encoded. By implementing custom `fromJson` and `toJson` procs, the binary data can be transparently base64 encoded/decoded making it perfectly save for JSON.
+For the example below lets imagine that `Example.data` holds binary data. Binary data does not mix with JSON since JSON which must be UTF-8 encoded. By implementing custom `fromJson` and `toJson` procs, the binary data can be transparently base64 encoded/decoded making it perfectly safe for JSON.
 
 ```nim
 import sunny, std/base64
@@ -187,7 +187,7 @@ let a = Container.fromJson("""{"type":"event","object":{}}""")
 type Event = object
   # ...
 
-let b = Event.fromJson(a.`object`.string)
+let b = Event.fromJson(a.`object`)
 ```
 
 ## Default behaviors
