@@ -301,6 +301,13 @@ block:
   let r2 = (ref seq[float]).fromJson("[4,5,6]")
   doAssert r2[] == @[4d,5,6]
 
+block:
+  type Something = object
+    o: RawJson
+
+  let s = Something.fromJson("""{"o":3.14}""")
+  doAssert float.fromJson(s.o) == 3.14
+
 when not defined(js):
   import data/twitter
 

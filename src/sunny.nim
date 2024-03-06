@@ -973,6 +973,9 @@ proc fromJson*[T](x: typedesc[T], input: string): T =
   let root = parseJson(input)
   result.fromJson(root, input)
 
+proc fromJson*[T](x: typedesc[T], input: RawJson): T =
+  fromJson(x, input.string)
+
 proc isEmpty(src: bool): bool
 proc isEmpty(src: SomeUnsignedInt): bool
 proc isEmpty(src: SomeSignedInt): bool
