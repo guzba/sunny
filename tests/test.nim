@@ -410,6 +410,9 @@ block:
   doAssertRaises CatchableError:
     discard RequiredTest.fromJson("""{"x":"y"}""")
 
+  doAssertRaises CatchableError:
+    discard RequiredTest.fromJson("""{"valid":null}""")
+
 block:
   type Node = object
     kids: seq[Node]

@@ -920,7 +920,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
           for i in 0 ..< value.o.len:
             if value.o[i][0] == renamedField:
               when requiredFlag:
-                found = true
+                found = value.o[i][1].kind != NullValue
               when stringFlag:
                 when v is (SomeNumber | Option[SomeNumber]):
                   if value.o[i][1].kind == StringValue:
