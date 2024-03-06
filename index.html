@@ -97,6 +97,7 @@
 <li><a class="reference" href="#fromJson%2COption%5BT%5D%2CJsonValue%2Cstring" title="fromJson[T](v: var Option[T]; value: JsonValue; input: string)">fromJson[T](v: var Option[T]; value: JsonValue; input: string)</a></li>
 <li><a class="reference" href="#fromJson%2Cseq%5BT%5D%2CJsonValue%2Cstring" title="fromJson[T](v: var seq[T]; value: JsonValue; input: string)">fromJson[T](v: var seq[T]; value: JsonValue; input: string)</a></li>
 <li><a class="reference" href="#fromJson%2CSomeTable%5Bstring%2CT%5D%2CJsonValue%2Cstring" title="fromJson[T](v: var SomeTable[string, T]; value: JsonValue; input: string)">fromJson[T](v: var SomeTable[string, T]; value: JsonValue; input: string)</a></li>
+<li><a class="reference" href="#fromJson%2Ctypedesc%5BT%5D%2CRawJson" title="fromJson[T](x: typedesc[T]; input: RawJson): T">fromJson[T](x: typedesc[T]; input: RawJson): T</a></li>
 <li><a class="reference" href="#fromJson%2Ctypedesc%5BT%5D%2Cstring" title="fromJson[T](x: typedesc[T]; input: string): T">fromJson[T](x: typedesc[T]; input: string): T</a></li>
 
 </ul>
@@ -407,6 +408,16 @@
 
   </dd>
 </div>
+<div id="fromJson,typedesc[T],RawJson">
+  <dt><pre><span class="Keyword">proc</span> <a href="#fromJson%2Ctypedesc%5BT%5D%2CRawJson"><span class="Identifier">fromJson</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">x</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">input</span><span class="Other">:</span> <a href="sunny.html#RawJson"><span class="Identifier">RawJson</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L976" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L976" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
 <div id="fromJson,typedesc[T],string">
   <dt><pre><span class="Keyword">proc</span> <a href="#fromJson%2Ctypedesc%5BT%5D%2Cstring"><span class="Identifier">fromJson</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">x</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">input</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">gcsafe</span></span>.}</pre></dt>
   <dd>
@@ -426,8 +437,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1070" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1070" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1073" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1073" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -437,8 +448,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1074" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1074" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1077" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1077" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -448,8 +459,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1087" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1087" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1090" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1090" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -458,8 +469,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1073" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1073" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1076" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1076" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -468,8 +479,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1072" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1072" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1075" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1075" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -478,8 +489,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1071" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1071" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1074" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1074" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -489,8 +500,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1076" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1076" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1079" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1079" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -500,8 +511,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1075" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1075" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1078" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1078" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -510,8 +521,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1077" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1077" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1080" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1080" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -520,8 +531,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1080" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1080" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1083" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1083" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -530,8 +541,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1078" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1078" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1081" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1081" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -540,8 +551,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1086" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1086" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1089" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1089" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -550,8 +561,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1085" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1085" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1088" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1088" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -560,8 +571,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1079" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1079" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1082" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1082" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -570,8 +581,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1083" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1083" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1086" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1086" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -580,8 +591,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1081" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1081" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1084" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1084" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -590,8 +601,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1082" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1082" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1085" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1085" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -600,8 +611,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1084" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1084" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1087" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1087" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -610,8 +621,8 @@
   <dd>
     
     
-    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1329" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1329" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/guzba/sunny/tree/master/src/sunny.nim#L1332" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/guzba/sunny/edit/devel/src/sunny.nim#L1332" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -660,7 +671,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2024-03-06 02:04:32 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2024-03-06 04:56:24 UTC</small>
       </div>
     </div>
   </div>
