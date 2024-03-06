@@ -194,8 +194,8 @@ let b = Event.fromJson(a.`object`)
 
 Sunny's default behavior when parsing fields is loose / not strict.
 
-* Fields are not required (use `required` field tag to become stricter)
-* A missing field and `field: null` are treated as the same thing
+* Fields are not required (use `required` field tag to become stricter).
+* A missing field and `"field": null` are treated as the same thing.
 
 This means you can easily parse the parts of a JSON blob you care about without a headache.
 
