@@ -137,7 +137,7 @@ While using field tags solves many of the most common problems when working with
 
 Taking inspiration from [jsony](https://github.com/treeform/jsony), Sunny supports calling custom `fromJson` and `toJson` hooks for types where you need more control than field tags provide.
 
-For the example below lets imagine that `Example.data` holds binary data. Binary data does not mix with JSON since JSON which must be UTF-8 encoded. By implementing custom `fromJson` and `toJson` procs, the binary data can be transparently base64 encoded/decoded making it perfectly safe for JSON.
+For the example below lets imagine that `Example.data` holds binary data. Binary data does not mix with JSON since JSON must be UTF-8 encoded. By implementing custom `fromJson` and `toJson` procs, the binary data can be transparently base64 encoded/decoded making it perfectly safe for JSON.
 
 ```nim
 import sunny, std/base64
@@ -203,9 +203,9 @@ While Sunny is loose about the presence / absence of fields, Sunny is strict abo
 
 * Detecting duplicate keys when parsing JSON (raises an exception instead of last-key-wins or something odd like that).
 * Invalid UTF-8 will be detected and raise an exception (JSON must be valid UTF-8).
-* All JSON values are validated as part of parsing, avoiding frustrating "parses-on-my-machine" situations cased by things like "10_000" working in Nim's `parseInt` while not being valid JSON.
+* All JSON values are validated as part of parsing, avoiding frustrating "parses-on-my-machine" situations caused by things like "10_000" working in Nim's `parseInt` while not being valid JSON.
 
-In addition to those protective measures, Sunny is also an iterative parser. This is very important when parsing untrusted inputs. A recursive parser attempting to parse an adversarial JSON blob can result in a stack overflow, terminating your process with zero information about what happened or why. This is not a great situation to find one-self in.
+In addition to those protective measures, Sunny is also an iterative parser. This is very important when parsing untrusted inputs. A recursive parser attempting to parse an adversarial JSON blob can result in a stack overflow, terminating your process with zero information about what happened or why. This is not a great situation to find oneself in.
 
 ## Performance
 
