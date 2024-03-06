@@ -515,10 +515,11 @@ block:
 
   type Holder2 = object
     a {.json: ",string".}: int
+    z {.json: ",string".}: int
 
-  doAssert Holder2(a: 1).toJson() == """{"a":"1"}"""
+  doAssert Holder2(a: 1, z: 0).toJson() == """{"a":"1","z":"0"}"""
 
-  doAssert Holder2.fromJson("""{"a":2}""") == Holder2(a: 2)
+  doAssert Holder2.fromJson("""{"a":2,"z":null}""") == Holder2(a: 2, z: 0)
 
 block:
   type ManyTags = object
