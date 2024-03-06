@@ -93,7 +93,7 @@ Using this tag indicates that the field must be both present in the JSON and mus
 
 ```nim
 type Example = object
-  x {.json: ",required".}: string
+  x {.json: ",required".}: int
 
 # Both of these raise an exception since `x` is tagged as a required field.
 let instance = Example.fromJson("""{}""")
