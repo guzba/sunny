@@ -962,8 +962,8 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
 
 proc fromJson*(v: var RawJson, value: JsonValue, input: string) =
   when defined(js):
-    for c in input:
-      v.string.add c
+    for i in 0 ..< value.len:
+      v.string.add input[value.start + i]
   else:
     if value.len > 0:
       v.string.setLen(value.len)

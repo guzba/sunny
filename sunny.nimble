@@ -1,4 +1,4 @@
-version     = "0.1.0"
+version     = "0.1.1"
 author      = "Ryan Oldenburg"
 description = "JSON in Nim with Go-like field tags"
 license     = "MIT"
