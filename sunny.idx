@@ -28,27 +28,27 @@ nim	fromJson	sunny.html#fromJson,SomeTable[string,T],JsonValue,string	proc fromJ
 nim	fromJson	sunny.html#fromJson,T,JsonValue,string_5	proc fromJson[T: ref](v: var T; value: JsonValue; input: string)		508
 nim	fromJson	sunny.html#fromJson,T,JsonValue,string_6	proc fromJson[T: object](obj: var T; value: JsonValue; input: string)		509
 nim	fromJson	sunny.html#fromJson,RawJson,JsonValue,string	proc fromJson(v: var RawJson; value: JsonValue; input: string)		510
-nim	fromJson	sunny.html#fromJson,typedesc[T],string	proc fromJson[T](x: typedesc[T]; input: string): T		511
-nim	fromJson	sunny.html#fromJson,typedesc[T],RawJson	proc fromJson[T](x: typedesc[T]; input: RawJson): T		512
-nim	json	sunny.html#json.t,string	template json(v: string)		855
-nim	toJson	sunny.html#toJson,bool,string	proc toJson(src: bool; s: var string)		1075
-nim	toJson	sunny.html#toJson,SomeUnsignedInt,string	proc toJson(src: SomeUnsignedInt; s: var string)		1076
-nim	toJson	sunny.html#toJson,SomeSignedInt,string	proc toJson(src: SomeSignedInt; s: var string)		1077
-nim	toJson	sunny.html#toJson,SomeFloat,string	proc toJson(src: SomeFloat; s: var string)		1078
-nim	toJson	sunny.html#toJson,char,string	proc toJson(src: char; s: var string)		1079
-nim	toJson	sunny.html#toJson,string,string	proc toJson(src: string; s: var string)		1080
-nim	toJson	sunny.html#toJson,,string	proc toJson(src: std.JsonNode; s: var string)		1081
-nim	toJson	sunny.html#toJson,T,string	proc toJson[T: array](src: T; s: var string)		1082
-nim	toJson	sunny.html#toJson,T,string_2	proc toJson[T: enum](src: T; s: var string)		1083
-nim	toJson	sunny.html#toJson,T,string_3	proc toJson[T: tuple](src: T; s: var string)		1084
-nim	toJson	sunny.html#toJson,T,string_4	proc toJson[T: distinct](src: T; s: var string)		1085
-nim	toJson	sunny.html#toJson,Option[T],string	proc toJson[T](src: Option[T]; s: var string)		1086
-nim	toJson	sunny.html#toJson,seq[T],string	proc toJson[T](src: seq[T]; s: var string)		1087
-nim	toJson	sunny.html#toJson,,string_2	proc toJson[T](src: (SomeSet[T] | set[T]); s: var string)		1088
-nim	toJson	sunny.html#toJson,SomeTable[string,T],string	proc toJson[T](src: SomeTable[string, T]; s: var string)		1089
-nim	toJson	sunny.html#toJson,T,string_5	proc toJson[T: ref](src: T; s: var string)		1090
-nim	toJson	sunny.html#toJson,T,string_6	proc toJson[T: object](src: T; s: var string)		1091
-nim	toJson	sunny.html#toJson,RawJson,string	proc toJson(src: RawJson; s: var string)		1092
-nim	toJson	sunny.html#toJson,T	proc toJson[T](src: T): string		1093
+nim	json	sunny.html#json.t,string	template json(v: string)		853
+nim	fromJson	sunny.html#fromJson,typedesc[T],string	proc fromJson[T](x: typedesc[T]; input: string): T		972
+nim	fromJson	sunny.html#fromJson,typedesc[T],RawJson	proc fromJson[T](x: typedesc[T]; input: RawJson): T		976
+nim	toJson	sunny.html#toJson,bool,string	proc toJson(src: bool; s: var string)		1073
+nim	toJson	sunny.html#toJson,SomeUnsignedInt,string	proc toJson(src: SomeUnsignedInt; s: var string)		1074
+nim	toJson	sunny.html#toJson,SomeSignedInt,string	proc toJson(src: SomeSignedInt; s: var string)		1075
+nim	toJson	sunny.html#toJson,SomeFloat,string	proc toJson(src: SomeFloat; s: var string)		1076
+nim	toJson	sunny.html#toJson,char,string	proc toJson(src: char; s: var string)		1077
+nim	toJson	sunny.html#toJson,string,string	proc toJson(src: string; s: var string)		1078
+nim	toJson	sunny.html#toJson,,string	proc toJson(src: std.JsonNode; s: var string)		1079
+nim	toJson	sunny.html#toJson,T,string	proc toJson[T: array](src: T; s: var string)		1080
+nim	toJson	sunny.html#toJson,T,string_2	proc toJson[T: enum](src: T; s: var string)		1081
+nim	toJson	sunny.html#toJson,T,string_3	proc toJson[T: tuple](src: T; s: var string)		1082
+nim	toJson	sunny.html#toJson,T,string_4	proc toJson[T: distinct](src: T; s: var string)		1083
+nim	toJson	sunny.html#toJson,Option[T],string	proc toJson[T](src: Option[T]; s: var string)		1084
+nim	toJson	sunny.html#toJson,seq[T],string	proc toJson[T](src: seq[T]; s: var string)		1085
+nim	toJson	sunny.html#toJson,,string_2	proc toJson[T](src: (SomeSet[T] | set[T]); s: var string)		1086
+nim	toJson	sunny.html#toJson,SomeTable[string,T],string	proc toJson[T](src: SomeTable[string, T]; s: var string)		1087
+nim	toJson	sunny.html#toJson,T,string_5	proc toJson[T: ref](src: T; s: var string)		1088
+nim	toJson	sunny.html#toJson,T,string_6	proc toJson[T: object](src: T; s: var string)		1089
+nim	toJson	sunny.html#toJson,RawJson,string	proc toJson(src: RawJson; s: var string)		1090
+nim	toJson	sunny.html#toJson,T	proc toJson[T](src: T): string		1332
 nimgrp	fromjson	sunny.html#fromJson-procs-all	proc		493
-nimgrp	tojson	sunny.html#toJson-procs-all	proc		1075
+nimgrp	tojson	sunny.html#toJson-procs-all	proc		1073
