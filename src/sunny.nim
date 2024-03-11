@@ -508,6 +508,8 @@ proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string)
 proc fromJson*[T: ref](v: var T, value: JsonValue, input: string)
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string)
 proc fromJson*(v: var RawJson, value: JsonValue, input: string)
+proc fromJson*[T](x: typedesc[T], input: string): T
+proc fromJson*[T](x: typedesc[T], input: RawJson): T
 
 proc fromJson*(v: var bool, value: JsonValue, input: string) =
   if value.kind == BooleanValue:
@@ -1088,6 +1090,7 @@ proc toJson*[T](src: SomeTable[string, T], s: var string)
 proc toJson*[T: ref](src: T, s: var string)
 proc toJson*[T: object](src: T, s: var string)
 proc toJson*(src: RawJson, s: var string)
+proc toJson*[T](src: T): string
 
 proc toJson*(src: bool, s: var string) =
   if src:
