@@ -6,6 +6,9 @@ doAssertRaises CatchableError:
   discard parseJson("")
 
 doAssertRaises CatchableError:
+  discard parseJson("\"")
+
+doAssertRaises CatchableError:
   discard parseJson("-")
 
 doAssertRaises CatchableError:
@@ -530,6 +533,13 @@ block:
   doAssert Holder2(a: 1, z: 0).toJson() == """{"a":"1","z":"0"}"""
 
   doAssert Holder2.fromJson("""{"a":2,"z":null}""") == Holder2(a: 2, z: 0)
+
+block:
+  type TestObject = object
+    a {.json: ",string".}: int
+
+  doAssertRaises CatchableError:
+    discard TestObject.fromJson("""{"a":""}""")
 
 block:
   type ManyTags = object

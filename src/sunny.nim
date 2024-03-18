@@ -142,6 +142,9 @@ proc parseString(input: string, i: var int): int =
 
   inc i
 
+  if i == input.len:
+    error("Unexpected end of JSON input")
+
   while i < input.len:
     when defined(amd64):
       if i + 16 <= input.len:
@@ -199,6 +202,9 @@ proc parseString(input: string, i: var int): int =
   return len
 
 proc parseNumber(input: string, start, len: int) =
+  if len == 0:
+    error("Invalid number at " & $start)
+
   var ni = start
 
   if input[start] == '-':
