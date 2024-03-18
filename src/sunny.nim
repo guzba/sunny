@@ -303,11 +303,11 @@ proc parseNull(input: string, i: var int) {.inline.} =
         return
   error("Expected null at " & $i)
 
-when defined(release) and defined(nimHasQuirky):
-  proc skipWhitespace(input: string, i: var int) {.inline, quirky.}
-  {.push quirky: on.}
-else:
-  proc skipWhitespace(input: string, i: var int) {.inline.}
+# when defined(release) and defined(nimHasQuirky):
+#   proc skipWhitespace(input: string, i: var int) {.inline, quirky.}
+#   {.push quirky: on.}
+# else:
+#   proc skipWhitespace(input: string, i: var int) {.inline.}
 
 proc skipWhitespace(input: string, i: var int) =
   if i >= input.len or input[i] notin {' ', '\n', '\r', '\t'}:
@@ -350,8 +350,8 @@ proc skipWhitespace(input: string, i: var int) =
     else:
       break
 
-when defined(release) and defined(nimHasQuirky):
-  {.pop.}
+# when defined(release) and defined(nimHasQuirky):
+#   {.pop.}
 
 proc parseJson(input: string): JsonValue =
   let invalidAt = validateUtf8(input)
