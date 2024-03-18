@@ -146,30 +146,30 @@ proc parseString(input: string, i: var int): int =
     error("Unexpected end of JSON input")
 
   while i < input.len:
-    when defined(amd64):
-      if i + 16 <= input.len:
-        let
-          a = mm_loadu_si128(input[i].unsafeAddr)
-          q = mm_cmpeq_epi8(a, mm_set1_epi8('"'.uint8))
-          e = mm_cmpeq_epi8(a, mm_set1_epi8('\\'.uint8))
-          qe = mm_or_si128(q, e)
-          mask = cast[uint16](mm_movemask_epi8(qe))
-        if mask == 0:
-          i += 16
-          continue
-        i += countTrailingZeroBits(mask)
-    elif defined(arm64):
-      if i + 8 <= input.len:
-        let
-          a = vld1_u8(input[i].unsafeAddr)
-          q = vceq_u8(a, vmov_n_u8('"'.uint8))
-          e = vceq_u8(a, vmov_n_u8('\\'.uint8))
-          qe = vorr_u8(q, e)
-          mask = vget_lane_u64(cast[uint64x1](qe), 0)
-        if mask == 0:
-          i += 8
-          continue
-        i += countTrailingZeroBits(mask) div 8
+    # when defined(amd64):
+    #   if i + 16 <= input.len:
+    #     let
+    #       a = mm_loadu_si128(input[i].unsafeAddr)
+    #       q = mm_cmpeq_epi8(a, mm_set1_epi8('"'.uint8))
+    #       e = mm_cmpeq_epi8(a, mm_set1_epi8('\\'.uint8))
+    #       qe = mm_or_si128(q, e)
+    #       mask = cast[uint16](mm_movemask_epi8(qe))
+    #     if mask == 0:
+    #       i += 16
+    #       continue
+    #     i += countTrailingZeroBits(mask)
+    # elif defined(arm64):
+    #   if i + 8 <= input.len:
+    #     let
+    #       a = vld1_u8(input[i].unsafeAddr)
+    #       q = vceq_u8(a, vmov_n_u8('"'.uint8))
+    #       e = vceq_u8(a, vmov_n_u8('\\'.uint8))
+    #       qe = vorr_u8(q, e)
+    #       mask = vget_lane_u64(cast[uint64x1](qe), 0)
+    #     if mask == 0:
+    #       i += 8
+    #       continue
+    #     i += countTrailingZeroBits(mask) div 8
 
     if input[i] == '"':
       inc i
@@ -313,36 +313,36 @@ proc skipWhitespace(input: string, i: var int) =
   if i >= input.len or input[i] notin {' ', '\n', '\r', '\t'}:
     return
 
-  when defined(amd64):
-    while i + 16 <= input.len:
-      let
-        a = mm_loadu_si128(input[i].unsafeAddr)
-        s = mm_cmpeq_epi8(a, mm_set1_epi8(' '.uint8))
-        n = mm_cmpeq_epi8(a, mm_set1_epi8('\n'.uint8))
-        r = mm_cmpeq_epi8(a, mm_set1_epi8('\r'.uint8))
-        t = mm_cmpeq_epi8(a, mm_set1_epi8('\t'.uint8))
-        snrt = mm_or_si128(mm_or_si128(s, n), mm_or_si128(r, t))
-        mask = not cast[uint16](mm_movemask_epi8(snrt))
-      if mask == 0:
-        i += 16
-        continue
-      i += countTrailingZeroBits(mask)
-      return
-  elif defined(arm64):
-    while i + 8 <= input.len:
-      let
-        a = vld1_u8(input[i].unsafeAddr)
-        s = vceq_u8(a, vmov_n_u8(' '.uint8))
-        n = vceq_u8(a, vmov_n_u8('\n'.uint8))
-        r = vceq_u8(a, vmov_n_u8('\r'.uint8))
-        t = vceq_u8(a, vmov_n_u8('\t'.uint8))
-        snrt = vorr_u8(vorr_u8(s, n), vorr_u8(r, t))
-        mask = not vget_lane_u64(cast[uint64x1](snrt), 0)
-      if mask == 0:
-        i += 8
-        continue
-      i += countTrailingZeroBits(mask) div 8
-      return
+  # when defined(amd64):
+  #   while i + 16 <= input.len:
+  #     let
+  #       a = mm_loadu_si128(input[i].unsafeAddr)
+  #       s = mm_cmpeq_epi8(a, mm_set1_epi8(' '.uint8))
+  #       n = mm_cmpeq_epi8(a, mm_set1_epi8('\n'.uint8))
+  #       r = mm_cmpeq_epi8(a, mm_set1_epi8('\r'.uint8))
+  #       t = mm_cmpeq_epi8(a, mm_set1_epi8('\t'.uint8))
+  #       snrt = mm_or_si128(mm_or_si128(s, n), mm_or_si128(r, t))
+  #       mask = not cast[uint16](mm_movemask_epi8(snrt))
+  #     if mask == 0:
+  #       i += 16
+  #       continue
+  #     i += countTrailingZeroBits(mask)
+  #     return
+  # elif defined(arm64):
+  #   while i + 8 <= input.len:
+  #     let
+  #       a = vld1_u8(input[i].unsafeAddr)
+  #       s = vceq_u8(a, vmov_n_u8(' '.uint8))
+  #       n = vceq_u8(a, vmov_n_u8('\n'.uint8))
+  #       r = vceq_u8(a, vmov_n_u8('\r'.uint8))
+  #       t = vceq_u8(a, vmov_n_u8('\t'.uint8))
+  #       snrt = vorr_u8(vorr_u8(s, n), vorr_u8(r, t))
+  #       mask = not vget_lane_u64(cast[uint64x1](snrt), 0)
+  #     if mask == 0:
+  #       i += 8
+  #       continue
+  #     i += countTrailingZeroBits(mask) div 8
+  #     return
 
   while i < input.len:
     if input[i] in {' ', '\n', '\r', '\t'}:
