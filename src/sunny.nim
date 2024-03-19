@@ -78,7 +78,7 @@ proc copy(s: var string, src: string, start, len: int) {.inline.} =
         copyMem(s[tmp].addr, src[start].unsafeAddr, len)
 
 proc unescapeString(input: string, start, len: int): string =
-  if len == 0:
+  if len <= 0:
     return
 
   # We can assume this string:
@@ -91,8 +91,7 @@ proc unescapeString(input: string, start, len: int): string =
     i = start
     copyStart = i
   while i < start + len:
-    let c = input[i]
-    if c == '\\':
+    if input[i] == '\\':
       copy(result, input, copyStart, i - copyStart)
       # We can blindly index ahead since this is checked in parseString
       let e = input[i + 1]
@@ -202,7 +201,7 @@ proc parseString(input: string, i: var int): int =
   return len
 
 proc parseNumber(input: string, start, len: int) =
-  if len == 0:
+  if len <= 0:
     error("Invalid number at " & $start)
 
   var ni = start
@@ -310,8 +309,8 @@ proc parseNull(input: string, i: var int) {.inline.} =
 #   proc skipWhitespace(input: string, i: var int) {.inline.}
 
 proc skipWhitespace(input: string, i: var int) =
-  if i >= input.len or input[i] notin {' ', '\n', '\r', '\t'}:
-    return
+  # if i >= input.len or input[i] notin {' ', '\n', '\r', '\t'}:
+  #   return
 
   # when defined(amd64):
   #   while i + 16 <= input.len:
