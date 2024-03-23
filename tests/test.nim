@@ -556,8 +556,14 @@ block:
 #   doAssertRaises CatchableError:
 #     discard Duplicate().toJson()
 
+block:
+  type TestType {.json(extraFields = {"foo": "bar", "cow": true, "num": 3}).} = object
+    f1: int
+    f2: string
 
+  let instance = TestType(f1: 3, f2: "str")
 
+  doAssert instance.toJson() == """{"f1":3,"f2":"str","foo":"bar","cow":true,"num":3}"""
 
 
 
