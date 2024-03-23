@@ -1020,8 +1020,6 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
         else:
           macros.error("Invalid json pragma extraFields value", p)
 
-  echo result.treeRepr
-
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when obj.isObjectVariant:
