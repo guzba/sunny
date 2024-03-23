@@ -875,6 +875,101 @@ template getFieldTags(v: typed): seq[string] =
   validateTags(tags)
   tags
 
+proc extractTypeImpl(n: NimNode): NimNode =
+  # Copied from std/macros
+  case n.kind
+  of nnkSym: # can extract an impl
+    result = n.getImpl.extractTypeImpl()
+  of nnkObjectTy, nnkRefTy, nnkPtrTy: result = n
+  of nnkBracketExpr:
+    if n.typeKind == ntyTypeDesc:
+      result = n[1].extractTypeImpl()
+    else:
+      doAssert n.typeKind == ntyGenericInst
+      result = n[0].getImpl()
+  of nnkTypeDef:
+    result = n[2]
+  else: error("Invalid node to retrieve type implementation of: " & $n.kind)
+
+proc customPragmaNode(n: NimNode): NimNode =
+  # Copied from std/macros
+  expectKind(n, {nnkSym, nnkDotExpr, nnkBracketExpr, nnkTypeOfExpr, nnkType, nnkCheckedFieldExpr})
+  let
+    typ = n.getTypeInst()
+
+  if typ.kind == nnkBracketExpr and typ.len > 1 and typ[1].kind == nnkProcTy:
+    return typ[1][1]
+  elif typ.typeKind == ntyTypeDesc:
+    let impl = getImpl(
+      if kind(typ[1]) == nnkBracketExpr: typ[1][0]
+      else: typ[1]
+    )
+    if impl.kind == nnkNilLit:
+      return impl
+    elif impl[0].kind == nnkPragmaExpr:
+      return impl[0][1]
+    else:
+      return impl[0] # handle types which don't have macro at all
+
+  if n.kind == nnkSym: # either an variable or a proc
+    let impl = n.getImpl()
+    if impl.kind in RoutineNodes:
+      return impl.pragma
+    elif impl.kind in {nnkIdentDefs, nnkConstDef} and impl[0].kind == nnkPragmaExpr:
+      return impl[0][1]
+    else:
+      let timpl = getImpl(if typ.kind == nnkBracketExpr: typ[0] else: typ)
+      if timpl.len>0 and timpl[0].len>1:
+        return timpl[0][1]
+      else:
+        return timpl
+
+  if n.kind in {nnkDotExpr, nnkCheckedFieldExpr}:
+    let name = $(if n.kind == nnkCheckedFieldExpr: n[0][1] else: n[1])
+    var typInst = getTypeInst(if n.kind == nnkCheckedFieldExpr or n[0].kind == nnkHiddenDeref: n[0][0] else: n[0])
+    while typInst.kind in {nnkVarTy, nnkBracketExpr}: typInst = typInst[0]
+    var typDef = getImpl(typInst)
+    while typDef != nil:
+      typDef.expectKind(nnkTypeDef)
+      let typ = typDef[2].extractTypeImpl()
+      if typ.kind notin {nnkRefTy, nnkPtrTy, nnkObjectTy}: break
+      let isRef = typ.kind in {nnkRefTy, nnkPtrTy}
+      if isRef and typ[0].kind in {nnkSym, nnkBracketExpr}: # defines ref type for another object(e.g. X = ref X)
+        typDef = getImpl(typ[0])
+      else: # object definition, maybe an object directly defined as a ref type
+        let
+          obj = (if isRef: typ[0] else: typ)
+        var identDefsStack = newSeq[NimNode](obj[2].len)
+        for i in 0..<identDefsStack.len: identDefsStack[i] = obj[2][i]
+        while identDefsStack.len > 0:
+          var identDefs = identDefsStack.pop()
+
+          case identDefs.kind
+          of nnkRecList:
+            for child in identDefs.children:
+              identDefsStack.add(child)
+          of nnkRecCase:
+            # Add condition definition
+            identDefsStack.add(identDefs[0])
+            # Add branches
+            for i in 1 ..< identDefs.len:
+              identDefsStack.add(identDefs[i].last)
+          else:
+            for i in 0 .. identDefs.len - 3:
+              let varNode = identDefs[i]
+              if varNode.kind == nnkPragmaExpr:
+                var varName = varNode[0]
+                if varName.kind == nnkPostfix:
+                  # This is a public field. We are skipping the postfix *
+                  varName = varName[1]
+                if eqIdent($varName, name):
+                  return varNode[1]
+
+        if obj[1].kind == nnkOfInherit: # explore the parent object
+          typDef = getImpl(obj[1][0])
+        else:
+          typDef = nil
+
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when obj.isObjectVariant:
