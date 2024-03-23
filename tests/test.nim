@@ -557,9 +557,9 @@ block:
 #     discard Duplicate().toJson()
 
 block:
-  # const cow = "cow"
+  const cow = "cow2"
 
-  type TestType {.json(extraFields = {"foo": "bar", "cow": true, "num": 3}).} = object
+  type TestType {.json(extraFields = {"foo": "bar", cow: true, "num": 3}).} = object
     f1: int
     f2: string
 

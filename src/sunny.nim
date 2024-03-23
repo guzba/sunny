@@ -982,9 +982,25 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
         for fieldNode in extraFieldsNode:
           fieldNode.expectKind(nnkExprColonExpr)
           fieldNode.expectLen(2)
-          let
-            l = fieldNode[0]
-            r = fieldNode[1]
+
+          # let l = case fieldNode[0].kind:
+          #   of nnkStrLit:
+          #     fieldNode[0]
+          #   of nnkIdent:
+          #     newStrLitNode($fieldNode[0])
+          #   else:
+          #     macros.error("Invalid json pragma extraFields name", fieldNode)
+          #     newEmptyNode()
+
+          let l = fieldNode[0]
+
+          let r = fieldNode[1]
+
+
+          if fieldNode[0].kind == nnkIdent:
+            result.insert 0, nnkMixinStmt.newTree(l)
+
+
           result.add quote do:
             if i > 0:
               s.add ','
@@ -1002,6 +1018,8 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
           extraFieldsNode.expectLen(0)
         else:
           macros.error("Invalid json pragma extraFields value", p)
+
+  echo result.treeRepr
 
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
