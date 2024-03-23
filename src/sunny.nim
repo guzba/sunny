@@ -989,16 +989,19 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
             if i > 0:
               s.add ','
             when type(`l`) isnot string:
-              {.error: "Invalid json pragma extraFields value, keys must be strings".}
+              macros.error("Invalid json pragma extraFields value, keys must be strings", p)
             const tmp = `l`.toJson() & ':'
             s.add tmp
-            `r`.toJson(s)
+            when type(`r`) is int:
+              toJson(`r`.int, s)
+            else:
+              `r`.toJson(s)
             inc i
       else:
         if extraFieldsNode.kind == nnkCurly:
           extraFieldsNode.expectLen(0)
         else:
-          macros.error("Invalid json pragma extraFields value")
+          macros.error("Invalid json pragma extraFields value", p)
 
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
