@@ -855,7 +855,7 @@ macro newObjectVariant(obj: typed, value: typed): untyped =
   return quote do:
     `obj` = `typ`(`fieldName`: `value`)
 
-template json*(v: string) {.pragma.}
+template json*(v: string = "", extraFields: untyped = {}) {.pragma.}
 
 proc validateTags(tags: static seq[string]) =
   when tags.len > 4:
@@ -871,7 +871,9 @@ proc validateTags(tags: static seq[string]) =
       {.error: ("Unrecognized JSON field tag: " & tags[3]).}
 
 template getFieldTags(v: typed): seq[string] =
-  const tags = v.getCustomPragmaVal(json).split(',')
+  when type(v.getCustomPragmaVal(json)[1]) isnot type({}):
+    {.error: "Invalid json pragma on field, extraFields may only be on a type".}
+  const tags = v.getCustomPragmaVal(json)[0].split(',')
   validateTags(tags)
   tags
 
@@ -969,6 +971,34 @@ proc customPragmaNode(n: NimNode): NimNode =
           typDef = getImpl(obj[1][0])
         else:
           typDef = nil
+
+macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): untyped =
+  result = newTree(nnkStmtList)
+  let pragmaNode = customPragmaNode(n)
+  for p in pragmaNode:
+    if p[0] == cp:
+      let extraFieldsNode = p[2]
+      if extraFieldsNode.kind == nnkTableConstr:
+        for fieldNode in extraFieldsNode:
+          fieldNode.expectKind(nnkExprColonExpr)
+          fieldNode.expectLen(2)
+          let
+            l = fieldNode[0]
+            r = fieldNode[1]
+          result.add quote do:
+            if i > 0:
+              s.add ','
+            when type(`l`) isnot string:
+              {.error: "Invalid json pragma extraFields value, keys must be strings".}
+            const tmp = `l`.toJson() & ':'
+            s.add tmp
+            `r`.toJson(s)
+            inc i
+      else:
+        if extraFieldsNode.kind == nnkCurly:
+          extraFieldsNode.expectLen(0)
+        else:
+          macros.error("Invalid json pragma extraFields value")
 
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
@@ -1410,6 +1440,9 @@ proc toJson*[T: object](src: T, s: var string) =
       s.add tmp
       v.toJson(s)
       inc i
+
+  when src.hasCustomPragma(json):
+    src.addExtraFields(json, s, i)
 
   s.add '}'
 
