@@ -870,6 +870,11 @@ proc validateTags(tags: static seq[string]) =
     when tags[3] notin ["", "omitempty", "required", "string"]:
       {.error: ("Unrecognized JSON field tag: " & tags[3]).}
 
+template getFieldTags(v: typed): seq[string] =
+  const tags = v.getCustomPragmaVal(json).split(',')
+  validateTags(tags)
+  tags
+
 proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
   if value.kind == ObjectValue:
     when obj.isObjectVariant:
@@ -878,10 +883,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       for k, v in obj.fieldPairs:
         if k == obj.discriminatorFieldName:
           when v.hasCustomPragma(json):
-            const
-              customPragmaVal = v.getCustomPragmaVal(json)
-              tags = customPragmaVal.split(',')
-            validateTags(tags)
+            const tags = v.getFieldTags()
             when tags[0] == "-" and tags.len == 1: # "-" case
               {.error: $T & " variant discriminator field cannot be omitted".}
             else:
@@ -909,10 +911,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
 
     template workAroundNimIssue19773(k, v) =
       when v.hasCustomPragma(json):
-        const
-          customPragmaVal = v.getCustomPragmaVal(json)
-          tags = customPragmaVal.split(',')
-        validateTags(tags)
+        const tags = v.getFieldTags()
         when tags[0] == "-" and tags.len == 1: # "-" case
           discard
         else:
@@ -1059,9 +1058,7 @@ proc isEmpty[T: ref](src: T): bool =
 proc isEmpty[T: object](src: T): bool =
   for _, v in src.fieldPairs:
     when v.hasCustomPragma(json):
-      const
-        customPragmaVal = v.getCustomPragmaVal(json)
-        tags = customPragmaVal.split(',')
+      const tags = v.getFieldTags()
       when tags[0] == "-" and tags.len == 1: # "-" case
         discard # Skipped fields are empty
       else:
@@ -1278,10 +1275,7 @@ proc toJson*[T: object](src: T, s: var string) =
   var i: int
   for k, v in src.fieldPairs:
     when v.hasCustomPragma(json):
-      const
-        customPragmaVal = v.getCustomPragmaVal(json)
-        tags = customPragmaVal.split(',')
-      validateTags(tags)
+      const tags = v.getFieldTags()
       when tags[0] == "-" and tags.len == 1: # "-" case
         discard
       else:
