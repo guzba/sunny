@@ -872,7 +872,7 @@ proc validateTags(tags: static seq[string]) =
 
 template getFieldTags(v: typed): seq[string] =
   when type(v.getCustomPragmaVal(json)[1]) isnot type({}):
-    {.error: "Invalid json pragma on field, extraFields may only be on a type".}
+    {.error: "Invalid json pragma on field, extraFields may only be on an object type definition".}
   const tags = v.getCustomPragmaVal(json)[0].split(',')
   validateTags(tags)
   tags
@@ -992,20 +992,21 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
           #     macros.error("Invalid json pragma extraFields name", fieldNode)
           #     newEmptyNode()
 
-          let l = fieldNode[0]
+          let
+            l = fieldNode[0]
+            r = fieldNode[1]
+          l.expectKind(nnkStrLit)
+          r.expectKind({nnkStrLit, nnkIntLit, nnkFloatLit, nnkIdent})
 
-          let r = fieldNode[1]
-
-
-          if fieldNode[0].kind == nnkIdent:
-            result.insert 0, nnkMixinStmt.newTree(l)
-
+          if r.kind == nnkIdent:
+            if r != newIdentNode("true") and r != newIdentNode("false"):
+              macros.error("Invalid json pragma extraFields value, must be a literal")
 
           result.add quote do:
             if i > 0:
               s.add ','
-            when type(`l`) isnot string:
-              macros.error("Invalid json pragma extraFields value, keys must be strings", p)
+            # when type(`l`) isnot string:
+            #   macros.error("Invalid json pragma extraFields value, keys must be strings", p)
             const tmp = `l`.toJson() & ':'
             s.add tmp
             when type(`r`) is int:
