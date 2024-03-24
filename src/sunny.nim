@@ -978,6 +978,8 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
   for p in pragmaNode:
     if p[0] == cp:
       let extraFieldsNode = p[2]
+      if p[1] != newStrLitNode(""):
+        macros.error("Invalid json pragma on object type, only extraFields is allowed here", p)
       if extraFieldsNode.kind == nnkTableConstr:
         for fieldNode in extraFieldsNode:
           fieldNode.expectKind(nnkExprColonExpr)
