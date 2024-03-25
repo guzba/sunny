@@ -645,3 +645,8 @@ echo something.toJson()
 #   echo seq[DefaultValues].fromJson(json3)
 
 # Test toJson scenarios
+
+var buffer = ""
+(val: 100,).toJson(buffer)
+
+discard (val: 100,).toJson()
