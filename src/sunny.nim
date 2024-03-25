@@ -1357,7 +1357,7 @@ proc toJson*[T: tuple](src: T, s: var string) =
   when T.isNamedTuple():
     s.add '{'
     var i: int
-    for k, v in v.fieldPairs:
+    for k, v in src.fieldPairs:
       if i > 0:
         s.add ','
       k.toJson(s)
