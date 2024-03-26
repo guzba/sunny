@@ -360,7 +360,7 @@ proc parseJson(input: string): JsonValue =
   var
     i: int
     stack: seq[(string, JsonValue)]
-    root: Option[JsonValue]
+    foundRoot: bool
 
   while true:
     skipWhitespace(input, i)
@@ -368,7 +368,9 @@ proc parseJson(input: string): JsonValue =
     if i == input.len:
       break
 
-    if root.isSome:
+    if foundRoot:
+      # If we already found the root there should not be any more
+      # non-whitespace characters
       error("Unexpected non-whitespace character at " & $i)
 
     var key: string
@@ -382,13 +384,14 @@ proc parseJson(input: string): JsonValue =
           if stack.len > 0:
             case stack[^1][1].kind
             of ObjectValue:
-              stack[^1][1].o.add(move popped)
+              stack[^1][1].o.add(ensureMove popped)
             of ArrayValue:
-              stack[^1][1].a.add(move popped[1])
+              stack[^1][1].a.add(ensureMove popped[1])
             else:
               error("Unexpected JsonValue kind, should not happen")
           else:
-            root = some(move popped[1])
+            result = ensureMove popped[1]
+            foundRoot = true
           continue
 
         if stack[^1][1].o.len > 0:
@@ -424,13 +427,14 @@ proc parseJson(input: string): JsonValue =
           if stack.len > 0:
             case stack[^1][1].kind
             of ObjectValue:
-              stack[^1][1].o.add(move popped)
+              stack[^1][1].o.add(ensureMove popped)
             of ArrayValue:
-              stack[^1][1].a.add(move popped[1])
+              stack[^1][1].a.add(ensureMove popped[1])
             else:
               error("Unexpected JsonValue kind, should not happen")
           else:
-            root = some(move popped[1])
+            result = ensureMove popped[1]
+            foundRoot = true
           continue
 
         if stack[^1][1].a.len > 0:
@@ -472,7 +476,7 @@ proc parseJson(input: string): JsonValue =
     value.start = start
 
     if value.kind in {ArrayValue, ObjectValue}:
-      stack.add((move key, move value))
+      stack.add((ensureMove key, ensureMove value))
     elif stack.len > 0:
       case stack[^1][1].kind:
       of ArrayValue:
@@ -481,19 +485,15 @@ proc parseJson(input: string): JsonValue =
         for j in 0 ..< stack[^1][1].o.len:
           if stack[^1][1].o[j][0] == key:
             error("Duplicate object key: " & key)
-        stack[^1][1].o.add((move key, value))
+        stack[^1][1].o.add((ensureMove key, value))
       else:
         error("Unexpected JsonValue kind, should not happen")
     else:
-      root = some(value)
+      result = ensureMove value
+      foundRoot = true
 
-  if stack.len > 0 or not root.isSome:
+  if stack.len > 0 or not foundRoot:
     error("Unexpected end of JSON input")
-
-  when defined(js):
-    return root.get
-  else:
-    return move root.get
 
 proc fromJson*(v: var bool, value: JsonValue, input: string)
 proc fromJson*(v: var SomeUnsignedInt, value: JsonValue, input: string)
@@ -666,13 +666,13 @@ proc fromJson*(v: var std.JsonNode, value: JsonValue, input: string) =
       for i in 0 ..< value.o.len:
         var tmp: std.JsonNode
         fromJsonInternal(tmp, value.o[i][1], input, depth + 1)
-        std.`[]=`(v, value.o[i][0], move tmp)
+        std.`[]=`(v, value.o[i][0], ensureMove tmp)
     of ArrayValue:
       v = std.newJArray()
       for i in 0 ..< value.a.len:
         var tmp: std.JsonNode
         fromJsonInternal(tmp, value.a[i], input, depth + 1)
-        std.add(v, move tmp)
+        std.add(v, ensureMove tmp)
 
   fromJsonInternal(v, value, input, 0)
 
@@ -766,14 +766,14 @@ proc fromJson*[T](v: var Option[T], value: JsonValue, input: string) =
   else:
     var tmp: T
     fromJson(tmp, value, input)
-    v = some(move tmp)
+    v = some(ensureMove tmp)
 
 proc fromJson*[T](v: var seq[T], value: JsonValue, input: string) =
   if value.kind == ArrayValue:
     for i in 0 ..< value.a.len:
       var tmp: T
       fromJson(tmp, value.a[i], input)
-      v.add(move tmp)
+      v.add(ensureMove tmp)
   elif value.kind == NullValue:
     discard
   else:
@@ -787,7 +787,7 @@ proc fromJson*[T](v: var (SomeSet[T] | set[T]), value: JsonValue, input: string)
     for i in 0 ..< value.a.len:
       var tmp: T
       fromJson(tmp, value.a[i], input)
-      v.incl(move tmp)
+      v.incl(ensureMove tmp)
   elif value.kind == NullValue:
     discard
   else:
@@ -803,7 +803,7 @@ proc fromJson*[T](v: var SomeTable[string, T], value: JsonValue, input: string) 
     for i in 0 ..< value.o.len:
       var tmp: T
       fromJson(tmp, value.o[i][1], input)
-      v[value.o[i][0]] = move tmp
+      v[value.o[i][0]] = ensureMove tmp
   elif value.kind == NullValue:
     discard
   else:
