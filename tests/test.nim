@@ -514,7 +514,7 @@ block:
   type Holder = object
     b {.json: ",string".}: uint
     c {.json: ",string".}: int
-    d {.json: ",string".}: float
+    d {.json: ",string".}: float32
     e {.json: ",string".}: Option[float]
     f {.json: ",string".}: Option[int]
 

@@ -590,9 +590,11 @@ proc fromJson*(v: var SomeSignedInt, value: JsonValue, input: string) =
 
 proc fromJson*(v: var SomeFloat, value: JsonValue, input: string) =
   if value.kind == NumberValue:
-    let chars = parseFloat(input, v, value.start)
+    var tmp: float
+    let chars = parseFloat(input, tmp, value.start)
     if chars != value.len:
       error("Invalid float at " & $value.start)
+    v = tmp
   elif value.kind == NullValue:
     discard
   else:
