@@ -687,7 +687,6 @@ proc fromJson*[T: array](v: var T, value: JsonValue, input: string) =
       error(
         "Expected array of length " & $v.len &
         ", got " & $value.a.len & " at " & $value.start)
-
   elif value.kind == NullValue:
     discard
   else:
