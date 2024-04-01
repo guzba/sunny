@@ -817,7 +817,8 @@ proc fromJson*[T: ref](v: var T, value: JsonValue, input: string) =
   if value.kind == NullValue:
     discard
   else:
-    new(v)
+    if v == nil:
+      new(v)
     fromJson(v[], value, input)
 
 proc discriminator(obj: NimNode): NimNode =
