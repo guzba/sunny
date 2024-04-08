@@ -1394,10 +1394,12 @@ proc toJson*[T](src: seq[T], s: var string) =
 
 proc toJson*[T](src: (SomeSet[T] | set[T]), s: var string) =
   s.add '['
-  for i, e in src:
+  var i: int
+  for e in src:
     if i > 0:
       s.add ','
     e.toJson(s)
+    inc i
   s.add']'
 
 proc toJson*[T](src: SomeTable[string, T], s: var string) =
