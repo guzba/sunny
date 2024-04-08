@@ -565,6 +565,16 @@ block:
 
   doAssert instance.toJson() == """{"f1":3,"f2":"str","foo":"bar","cow":true,"num":3}"""
 
+block:
+  var before: HashSet[string]
+  before.incl("a")
+  before.incl("b")
+
+  let after = HashSet[string].fromJson(before.toJson())
+  doAssert after.len == 2
+  doAssert "a" in after
+  doAssert "b" in after
+
 
 
 
