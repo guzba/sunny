@@ -575,6 +575,18 @@ block:
   doAssert "a" in after
   doAssert "b" in after
 
+# asdf const cannot be in the block for some reason
+const asdf = "bar"
+block:
+  type TestType {.json(extraFields = {"foo": asdf}).} = object
+    f1: int
+    f2: string
+
+  let instance = TestType(f1: 3, f2: "str")
+
+  echo instance.toJson()
+
+  doAssert instance.toJson() == """{"f1":3,"f2":"str","foo":"bar"}"""
 
 
 

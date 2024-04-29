@@ -1002,9 +1002,9 @@ macro addExtraFields(n: typed, cp: typed{nkSym}, s: var string, i: var int): unt
           l.expectKind(nnkStrLit)
           r.expectKind({nnkStrLit, nnkIntLit, nnkFloatLit, nnkIdent})
 
-          if r.kind == nnkIdent:
-            if r != newIdentNode("true") and r != newIdentNode("false"):
-              macros.error("Invalid json pragma extraFields value, must be a literal")
+          # if r.kind == nnkIdent:
+          #   if r != newIdentNode("true") and r != newIdentNode("false"):
+          #     macros.error("Invalid json pragma extraFields value, must be a literal")
 
           result.add quote do:
             if i > 0:
