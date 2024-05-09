@@ -1424,6 +1424,10 @@ proc toJson*[T: object](src: T, s: var string) =
   s.add '{'
 
   var i: int
+
+  when src.hasCustomPragma(json):
+    src.addExtraFields(json, s, i)
+
   for k, v in src.fieldPairs:
     when v.hasCustomPragma(json):
       const tags = v.getFieldTags()
@@ -1466,9 +1470,6 @@ proc toJson*[T: object](src: T, s: var string) =
       s.add tmp
       v.toJson(s)
       inc i
-
-  when src.hasCustomPragma(json):
-    src.addExtraFields(json, s, i)
 
   s.add '}'
 
