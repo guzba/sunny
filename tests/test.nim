@@ -563,7 +563,7 @@ block:
 
   let instance = TestType(f1: 3, f2: "str")
 
-  doAssert instance.toJson() == """{"f1":3,"f2":"str","foo":"bar","cow":true,"num":3}"""
+  doAssert instance.toJson() == """{"foo":"bar","cow":true,"num":3,"f1":3,"f2":"str"}"""
 
 block:
   var before: HashSet[string]
@@ -586,7 +586,7 @@ block:
 
   echo instance.toJson()
 
-  doAssert instance.toJson() == """{"f1":3,"f2":"str","foo":"bar"}"""
+  doAssert instance.toJson() == """{"foo":"bar","f1":3,"f2":"str"}"""
 
 
 
