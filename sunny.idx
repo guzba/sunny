@@ -49,6 +49,6 @@ nim	toJson	sunny.html#toJson,SomeTable[string,T],string	proc toJson[T](src: Some
 nim	toJson	sunny.html#toJson,T,string_5	proc toJson[T: ref](src: T; s: var string)		1239
 nim	toJson	sunny.html#toJson,T,string_6	proc toJson[T: object](src: T; s: var string)		1240
 nim	toJson	sunny.html#toJson,RawJson,string	proc toJson(src: RawJson; s: var string)		1241
-nim	toJson	sunny.html#toJson,T	proc toJson[T](src: T): string		1485
+nim	toJson	sunny.html#toJson,T	proc toJson[T](src: T): string		1486
 nimgrp	fromjson	sunny.html#fromJson-procs-all	proc		498
 nimgrp	tojson	sunny.html#toJson-procs-all	proc		1224
