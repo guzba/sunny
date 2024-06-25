@@ -483,6 +483,7 @@ block:
       IntBox, FloatBox, StringBox
 
     Box1 = ref object
+      x {.json:"-".}: int
       case kind: BoxKind
       of IntBox:
         i: int
