@@ -1030,7 +1030,7 @@ proc fromJson*[T: object](obj: var T, value: JsonValue, input: string) =
       # Do the object variant discriminator field first
       var foundDiscriminator = false
       for k, v in obj.fieldPairs:
-        if k == obj.discriminatorFieldName:
+        when k == obj.discriminatorFieldName:
           when v.hasCustomPragma(json):
             const tags = v.getFieldTags()
             when tags[0] == "-" and tags.len == 1: # "-" case
