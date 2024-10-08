@@ -1313,17 +1313,17 @@ proc toJson*(src: std.JsonNode, s: var string) =
     s.add "null"
   else:
     case src.kind:
-    of JNull:
+    of std.JsonNodeKind.JNull:
       s.add "null"
-    of JBool:
+    of std.JsonNodeKind.JBool:
       std.getBool(src).toJson(s)
-    of JInt:
+    of std.JsonNodeKind.JInt:
       std.getInt(src).toJson(s)
-    of JFloat:
+    of std.JsonNodeKind.JFloat:
       std.getFloat(src).toJson(s)
-    of JString:
+    of std.JsonNodeKind.JString:
       std.getStr(src).toJson(s)
-    of JArray:
+    of std.JsonNodeKind.JArray:
       s.add '['
       var i = 0
       for e in std.items(src):
@@ -1332,7 +1332,7 @@ proc toJson*(src: std.JsonNode, s: var string) =
         e.toJson(s)
         inc i
       s.add ']'
-    of JObject:
+    of std.JsonNodeKind.JObject:
       s.add '{'
       var i = 0
       for k, v in std.pairs(src):
