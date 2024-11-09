@@ -14,6 +14,11 @@ when defined(amd64):
 elif defined(arm64):
   import nimsimd/neon
 
+const
+  t = "true"
+  f = "false"
+  n = "null"
+
 type
   RawJson* = distinct string
 
@@ -35,11 +40,6 @@ type
   SomeTable*[K, V] =
     Table[K, V] | OrderedTable[K, V] |
     TableRef[K, V] | OrderedTableRef[K, V]
-
-let
-  t = "true"
-  f = "false"
-  n = "null"
 
 template error(msg: string) =
   raise newException(CatchableError, msg)
@@ -277,13 +277,12 @@ proc parseBoolean(input: string, i: var int): bool {.inline.} =
       i += 5
       return false
   else:
-    {.gcsafe.}:
-      if i + 4 <= input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
-        i += 4
-        return true
-      elif i + 5 <= input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
-        i += 5
-        return false
+    if i + 4 <= input.len and equalMem(input[i].unsafeAddr, t.cstring, 4):
+      i += 4
+      return true
+    elif i + 5 <= input.len and equalMem(input[i].unsafeAddr, f.cstring, 5):
+      i += 5
+      return false
   error("Expected true or false at " & $i)
 
 proc parseNull(input: string, i: var int) {.inline.} =
@@ -296,10 +295,9 @@ proc parseNull(input: string, i: var int) {.inline.} =
       i += 4
       return
   else:
-    {.gcsafe.}:
-      if i + 4 <= input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
-        i += 4
-        return
+    if i + 4 <= input.len and equalMem(input[i].unsafeAddr, n.cstring, 4):
+      i += 4
+      return
   error("Expected null at " & $i)
 
 # when defined(release) and defined(nimHasQuirky):
